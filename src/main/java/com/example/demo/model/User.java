@@ -1,6 +1,8 @@
-package com.example.demo.entity;
+package com.example.demo.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +19,8 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<Goal>goals=new HashSet<>();
 
     public User() {}
 
