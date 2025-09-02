@@ -7,8 +7,18 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id", nullable = false, unique = true)
-    private long id;
-    
+    private Long id;
+
+    public Task() {
+        this.taskStatus = TaskStatus.NOT_DONE;
+    }
+
+    public Task(String name, Goal goal) {
+        this();
+        this.name = name;
+        this.goal = goal;
+    }
+
     @Column(name = "name", length = 20)
     private String name;
      
@@ -16,7 +26,7 @@ public class Task {
     private TaskStatus taskStatus;
     
     @ManyToOne
-    @JoinColumn(name = "task_goal")
+    @JoinColumn(name = "task_goal", nullable = false)
     private Goal goal;
 
     public long getId() {
