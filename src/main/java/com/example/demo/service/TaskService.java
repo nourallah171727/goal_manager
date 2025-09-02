@@ -1,12 +1,12 @@
 package com.example.demo.service;
 import com.example.demo.model.Goal;
 import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,7 +19,7 @@ public class TaskService {
     }
     public Task createTask(String name, Goal goal){
         List<Task> tasks = repository.findByGoal(goal);
-        if(tasks.stream().anyMatch(t->t.getName().equals(name))){
+        if(tasks.stream().anyMatch(t->t.getName().equals(name) && t.getGoal().getId().equals(goal.getId()))){
             throw new IllegalArgumentException("task already exists!");
         }
         Task task = new Task(name, goal);
@@ -43,5 +43,12 @@ public class TaskService {
         List<Task> tasks = repository.findByGoal_Id(id);
         if(tasks.isEmpty()) throw new IllegalArgumentException("no task  associated to such a goal");
         return tasks;
+    }
+    public Task markDone(Long id){
+        Task task = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("cannot update non existing tasks"));
+        if(task.getTaskStatus() == TaskStatus.DONE) throw new IllegalCallerException("A fininshed task can't be remarked as done");
+        task.setTaskStatus(TaskStatus.DONE);
+        return repository.save(task);
     }
 }
