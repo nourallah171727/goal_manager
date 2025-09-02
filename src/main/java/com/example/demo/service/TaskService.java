@@ -10,6 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+//here why transactional? chat 3tahali 9allek rollbak ki tsir exception
+//bon houa rahou fibeli mech les méthodes lkol lezem transactional fiha 5orrefa
+//nhessha hakka safe ama bati2a
+
 @Transactional
 public class TaskService {
     private final TaskRepository repository;
@@ -19,6 +23,8 @@ public class TaskService {
     }
     public Task createTask(String name, Goal goal){
         List<Task> tasks = repository.findByGoal(goal);
+        //I think that here it should be an OR not an END: doch lazem And 5ater sinon tnajjem tkoun nafs l esm ama l goal e5er konchi itha mathabbech terlaubi zouz taskouet l goals mo5talfin 3andhom nafs l esm
+        // houni de toute façon l or 8alta 5ater ki thott or ywalli ma3andekch l 7a9 zouz taskouet 3andhom nafs l esm
         if(tasks.stream().anyMatch(t->t.getName().equals(name) && t.getGoal().getId().equals(goal.getId()))){
             throw new IllegalArgumentException("task already exists!");
         }
@@ -41,6 +47,9 @@ public class TaskService {
     }
     public List<Task> getTasksByGoalId(Long id){
         List<Task> tasks = repository.findByGoal_Id(id);
+        //empty list of tasks should also be ok no ? I think if goal does not exist is a problem n bot an empty list of tasks!
+        // hattana 5ammemt fiha c'est un choix ena 3maltou 9olt ashel bech na3rfou ennou l goal heka ma3andouch taskouet
+        // thebb nbaddlouha 3adi
         if(tasks.isEmpty()) throw new IllegalArgumentException("no task  associated to such a goal");
         return tasks;
     }
