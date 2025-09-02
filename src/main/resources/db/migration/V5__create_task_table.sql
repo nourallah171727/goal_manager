@@ -1,9 +1,6 @@
-
-CREATE TYPE task_status AS ENUM ('DONE', 'NOT_DONE');
-
 CREATE TABLE IF NOT EXISTS tasks (
-    task_id BIGSERIAL PRIMARY KEY,
+    task_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20) NOT NULL,
-    status task_status NOT NULL DEFAULT 'NOT_DONE',
-    task_goal BIGINT NOT NULL REFERENCES goals(id)
+    status ENUM('DONE', 'NOT_DONE') NOT NULL DEFAULT 'NOT_DONE',
+    CONSTRAINT fk_task_goal FOREIGN KEY (task_goal) REFERENCES goals(goal_id)
 );

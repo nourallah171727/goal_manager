@@ -22,7 +22,7 @@ public class Task {
     @Column(name = "name", length = 20)
     private String name;
      
-    @Column(name = "task_status")
+    @Column(name = "status")
     private TaskStatus taskStatus;
     
     @ManyToOne
