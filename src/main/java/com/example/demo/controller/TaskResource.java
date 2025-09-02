@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE}, path = "/task")
 public class TaskResource {
     private final TaskService service;
-
+    //autowired is necessary no?
     public TaskResource(TaskService service) {
         this.service = service;
     }
@@ -20,6 +20,36 @@ public class TaskResource {
     public ResponseEntity<Task> getTask(@PathVariable("taskId") Long taskId){
         try {
             Task task = service.getTaskById(taskId);
+            return ResponseEntity.ok(task);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @GetMapping("/all/{goalId}")
+    public ResponseEntity<List<Task>> getAllTasks(@PathVariable("goalId") Long goalId){
+        try{
+            List<Task> list = service.getTasksByGoalId(goalId);
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    //I think we should just have goal_id as path variable !
+    //instead of .ok which has 200 http code , we should use http.created which has status code 204 , used for created
+    @PostMapping
+    public ResponseEntity<Task> createTask(@RequestParam("name") String name, @RequestBody Goal goal){
+        try {
+            Task task = service.createTask(name, goal);
+            return ResponseEntity.ok(task);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    //same here , doing logic only for name is too restricted ! I THINK
+    @PutMapping("/{taskId}")
+    public ResponseEntity<Task> updateTaskName(@PathVariable("taskId") Long taskId, @RequestParam String name){
+        try{
+            Task task = service.updateTaskName(taskId, name);
             return ResponseEntity.ok(task);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -34,33 +64,4 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
-    @GetMapping("/all/{goalId}")
-    public ResponseEntity<List<Task>> getAllTasks(@PathVariable("goalId") Long goalId){
-        try{
-            List<Task> list = service.getTasksByGoalId(goalId);
-            return ResponseEntity.ok(list);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    @PostMapping
-    public ResponseEntity<Task> createTask(@RequestParam("name") String name, @RequestBody Goal goal){
-        try {
-            Task task = service.createTask(name, goal);
-            return ResponseEntity.ok(task);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    @PutMapping("/{taskId}")
-    public ResponseEntity<Task> updateTaskName(@PathVariable("taskId") Long taskId, @RequestParam String name){
-        try{
-            Task task = service.updateTaskName(taskId, name);
-            return ResponseEntity.ok(task);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+//here why transactional?
 @Transactional
 public class TaskService {
     private final TaskRepository repository;
@@ -19,6 +20,7 @@ public class TaskService {
     }
     public Task createTask(String name, Goal goal){
         List<Task> tasks = repository.findByGoal(goal);
+        //I think that here it should be an OR not an END
         if(tasks.stream().anyMatch(t->t.getName().equals(name) && t.getGoal().getId().equals(goal.getId()))){
             throw new IllegalArgumentException("task already exists!");
         }
@@ -41,6 +43,7 @@ public class TaskService {
     }
     public List<Task> getTasksByGoalId(Long id){
         List<Task> tasks = repository.findByGoal_Id(id);
+        //empty list of tasks should also be ok no ? I think if goal does not exist is a problem n bot an empty list of tasks!
         if(tasks.isEmpty()) throw new IllegalArgumentException("no task  associated to such a goal");
         return tasks;
     }
