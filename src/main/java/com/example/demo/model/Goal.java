@@ -3,6 +3,8 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "goals")
@@ -24,6 +26,8 @@ public class Goal {
     @ManyToOne
     @JoinColumn(name = "goal_user", nullable = false)
     private User user;
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<Task> tasks=new HashSet<>();
 
     public Goal() {
         this.goalStand = GoalStand.NOT_STARTED;
