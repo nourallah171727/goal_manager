@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.model.User;
-import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class UserService {
         if(user==null){
             throw new IllegalArgumentException("user should not be null");
         }
-        if(user.getId()==null || repository.findById(id).isEmpty()){
+        if(user.getId()==null || repository.findById(id).isEmpty()){ //tested
             throw new IllegalArgumentException("user must already be in the db");
         }
         return repository.save(user);
