@@ -22,18 +22,18 @@ public class UserResource {
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUser(@PathVariable("userId") Long userId) {
         try {
-            User user=userService.getTaskById(userId);
+            User user=userService.getUserById(userId);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllTasks(){
-            return ResponseEntity.ok(userService.getUsers());
+    public ResponseEntity<List<User>> getAllUsers(){
+        return ResponseEntity.ok(userService.getUsers());
     }
-    @PostMapping("")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         try{
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
         }catch (Exception e){
