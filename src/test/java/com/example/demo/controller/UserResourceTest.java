@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -149,7 +150,7 @@ public class UserResourceTest {
     @Test
     void testGetAllUsersSuccess() throws Exception {
         User user1 = new User("unknown1", "thisisanemail1@gmail.com");
-        User user2 = new User("unknown2", "thisistheemail2@gmail.com");
+        User user2 = new User("unknown2", "thisisanemail2@gmail.com");
         List<User> list = new LinkedList<>();
         list.add(user1);
         list.add(user2);
@@ -157,9 +158,9 @@ public class UserResourceTest {
         httpSimulator.perform(get("/user/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("unknown1"))
+                .andExpect(jsonPath("$[0].username").value("unknown1"))
                 .andExpect(jsonPath("$[0].email").value("thisisanemail1@gmail.com"))
-                .andExpect(jsonPath("$[1].name").value("unknown2"))
+                .andExpect(jsonPath("$[1].username").value("unknown2"))
                 .andExpect(jsonPath("$[1].email").value("thisisanemail2@gmail.com"));
         verify(service).getUsers();
     }
@@ -176,7 +177,9 @@ public class UserResourceTest {
                 .andExpect(jsonPath("$.id").value(1234544))
                 .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
                 .andExpect(jsonPath("$.email").value("thisisanemail2@gmail.com"));
-        verify(service).updateUser(1234544L, any(User.class));
+        verify(service).updateUser(1234544L, newUser);
+        assertEquals("Abderrahmen Firas Ben Hmidene", newUser.getUsername());
+        assertEquals("thisisanemail2@gmail.com", newUser.getEmail());
     }
 
     @Test
@@ -186,7 +189,6 @@ public class UserResourceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(null)))
                 .andExpect(status().isBadRequest());
-        verify(service).updateUser(1215487L, null);
     }
 
     @Test
@@ -198,7 +200,7 @@ public class UserResourceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
-        verify(service).updateUser(1215487L, any(User.class));
+        verify(service).updateUser(1215487L, user);
     }
 
     @Test
@@ -210,7 +212,7 @@ public class UserResourceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
-        verify(service).updateUser(1215487L, any(User.class));
+        verify(service).updateUser(1215487L, user);
     }
 
     @Test
