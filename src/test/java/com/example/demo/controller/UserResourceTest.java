@@ -39,7 +39,7 @@ public class UserResourceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Abderrahmen Firas Ben Hmidene"))
+                .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
                 .andExpect(jsonPath("$.email").value("thisisanemail@yahoo.de"));
         verify(service).createUser(any(User.class));
     }
@@ -64,35 +64,32 @@ public class UserResourceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
-        verify(service).createUser(any(User.class));
     }
 
     @Test
     void testCreateUserFail3() throws Exception {
         User user1 = new User("unknown1", "thisisanemail1@gmail.com");
         User user2 = new User("unknown1", "thisistheemail2@gmail.com");
+        user1.setId(null);
+        user2.setId(null);
+        System.out.println("-----------");
+        System.out.println(user1.toString());
+        System.out.println(user2.toString());
         AtomicBoolean called = new AtomicBoolean(false);
-        when(service.createUser(user1)).thenAnswer(invocation -> {
+        when(service.createUser(any(User.class))).thenAnswer(invocation -> {
             if (called.get()) {
                 throw new IllegalArgumentException("name already used");
             } else {
                 called.set(true);
-                return user1;
+                return invocation.getArgument(0);
             }
         });
-        when(service.createUser(user2)).thenAnswer(invocation -> {
-            if (called.get()) {
-                throw new IllegalArgumentException("name already used");
-            } else {
-                called.set(true);
-                return user2;
-            }
-        });
+
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user1)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("unknown1"))
+                .andExpect(jsonPath("$.username").value("unknown1"))
                 .andExpect(jsonPath("$.email").value("thisisanemail1@gmail.com"));
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,27 +103,19 @@ public class UserResourceTest {
         User user1 = new User("unknown1", "thisisanemail1@gmail.com");
         User user2 = new User("unknown2", "thisistheemail1@gmail.com");
         AtomicBoolean called = new AtomicBoolean(false);
-        when(service.createUser(user1)).thenAnswer(invocation -> {
+        when(service.createUser(any(User.class))).thenAnswer(invocation -> {
             if (called.get()) {
-                throw new IllegalArgumentException("mail address already used");
+                throw new IllegalArgumentException("name already used");
             } else {
                 called.set(true);
-                return user1;
-            }
-        });
-        when(service.createUser(user2)).thenAnswer(invocation -> {
-            if (called.get()) {
-                throw new IllegalArgumentException("mail address already used");
-            } else {
-                called.set(true);
-                return user2;
+                return invocation.getArgument(0);
             }
         });
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user1)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("unknown1"))
+                .andExpect(jsonPath("$.username").value("unknown1"))
                 .andExpect(jsonPath("$.email").value("thisisanemail1@gmail.com"));
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -180,20 +169,20 @@ public class UserResourceTest {
         User newUser = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail2@gmail.com");
         newUser.setId(1234544L);
         when(service.updateUser(1234544L, newUser)).thenReturn(newUser);
-        httpSimulator.perform(put("/user/1234544L")
+        httpSimulator.perform(put("/user/1234544")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1234544))
                 .andExpect(jsonPath("$.name").value("Abderrahmen Firas Ben Hmidene"))
-                .andExpect(jsonPath("$.name").value("thisisanemail2@gmail.com"));
+                .andExpect(jsonPath("$.email").value("thisisanemail2@gmail.com"));
         verify(service).updateUser(1234544L, any(User.class));
     }
 
     @Test
     void testUpdateUserFail1() throws Exception {
         when(service.updateUser(1215487L, null)).thenThrow(new IllegalArgumentException("user should not be null"));
-        httpSimulator.perform(put("/user/1215487L")
+        httpSimulator.perform(put("/user/1215487")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(null)))
                 .andExpect(status().isBadRequest());
@@ -205,7 +194,7 @@ public class UserResourceTest {
         User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@gmail.com");
         user.setId(null);
         when(service.updateUser(1215487L, user)).thenThrow(new IllegalArgumentException("user must already be in the db"));
-        httpSimulator.perform(put("/user/1215487L")
+        httpSimulator.perform(put("/user/1215487")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
@@ -217,7 +206,7 @@ public class UserResourceTest {
         User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@gmail.com");
         user.setId(1215487L);
         when(service.updateUser(1215487L, user)).thenThrow(new IllegalArgumentException("user must already be in the db"));
-        httpSimulator.perform(put("/user/1215487L")
+        httpSimulator.perform(put("/user/1215487")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());

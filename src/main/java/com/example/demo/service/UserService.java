@@ -29,6 +29,12 @@ public class UserService {
         if(user.getId()!=null){
             throw new IllegalArgumentException("user should not already have an ID!");
         }
+        if(user.getUsername() == null || user.getEmail() == null){
+            throw new IllegalArgumentException("user should have a username and an email");
+        }
+        if (repository.existsByEmail(user.getEmail()) || repository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("user should have a usique username and a unique email");
+        }
         return repository.save(user);
     }
     public User updateUser(Long id , User user){
