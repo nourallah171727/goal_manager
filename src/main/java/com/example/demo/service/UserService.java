@@ -29,6 +29,12 @@ public class UserService {
         if(user.getId()!=null){
             throw new IllegalArgumentException("user should not already have an ID!");
         }
+        if(repository.findByUsername(user.getUsername()).isPresent()){
+            throw new IllegalArgumentException("you should choose another name");
+        }
+        if(repository.findByEmail(user.getEmail()).isPresent()){
+            throw new IllegalArgumentException("you should choose another email");
+        }
         return repository.save(user);
     }
     public User updateUser(Long id , User user){
