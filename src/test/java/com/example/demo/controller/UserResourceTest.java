@@ -132,8 +132,8 @@ public class UserResourceTest {
         when(service.getUserById(1235586L)).thenReturn(user);
         httpSimulator.perform(get("/user/1235586"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Abderrahmen Firas Ben Hmidene"))
-                .andExpect(jsonPath("$.email").value("thisisanemail@yahoo.de"))
+                .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
+                .andExpect(jsonPath("$.email").value("thisisanemail@gmail.com"))
                 .andExpect(jsonPath("$.id").value(1235586L));
         verify(service).getUserById(1235586L);
     }
@@ -141,7 +141,7 @@ public class UserResourceTest {
     @Test
     void testGetUserFail() throws Exception {
         when(service.getUserById(4585585L)).thenThrow(new IllegalArgumentException("no user with such id"));
-        httpSimulator.perform(get("/user/4585585L"))
+        httpSimulator.perform(get("/user/4585585"))
                 .andExpect(status().isBadRequest());
         verify(service).getUserById(4585585L);
     }
@@ -174,7 +174,7 @@ public class UserResourceTest {
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1234544))
-                .andExpect(jsonPath("$.name").value("Abderrahmen Firas Ben Hmidene"))
+                .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
                 .andExpect(jsonPath("$.email").value("thisisanemail2@gmail.com"));
         verify(service).updateUser(1234544L, any(User.class));
     }
