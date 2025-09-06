@@ -3,5 +3,6 @@ CREATE TABLE goals (
     name VARCHAR(20) NOT NULL,
     stand ENUM('NOT_STARTED', 'PROGRESS', 'COMPLETED', 'OVERDUE') NOT NULL DEFAULT 'NOT_STARTED',
     due_date TIMESTAMP DEFAULT NULL,
+    goal_user BIGINT,
     CONSTRAINT fk_goal_user FOREIGN KEY (goal_user) REFERENCES users(id)
 );
