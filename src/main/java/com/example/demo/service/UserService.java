@@ -29,11 +29,11 @@ public class UserService {
         if(user.getId()!=null){
             throw new IllegalArgumentException("user should not already have an ID!");
         }
-        if(repository.findByUsername(user.getUsername()).isPresent()){
-            throw new IllegalArgumentException("you should choose another name");
+        if(user.getUsername() == null || user.getEmail() == null){
+            throw new IllegalArgumentException("user should have a username and an email");
         }
-        if(repository.findByEmail(user.getEmail()).isPresent()){
-            throw new IllegalArgumentException("you should choose another email");
+        if (repository.existsByEmail(user.getEmail()) || repository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("user should have a usique username and a unique email");
         }
         return repository.save(user);
     }
