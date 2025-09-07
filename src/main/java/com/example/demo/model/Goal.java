@@ -87,11 +87,11 @@ public class Goal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Goal goal = (Goal) o;
-        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(user, goal.user) && Objects.equals(tasks, goal.tasks);
+        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(user, goal.user) ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, goalStand, dueDate, user, tasks);
+        return Objects.hash(id, name, goalStand, dueDate, user);
     }
 }
