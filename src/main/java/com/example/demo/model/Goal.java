@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "goals")
 public class Goal {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "goal_id", nullable = false, unique = true)
@@ -16,7 +19,7 @@ public class Goal {
     
     @Column(name = "name", length = 20)
     private String name;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "stand")
     private GoalStand goalStand;
     
@@ -78,5 +81,17 @@ public class Goal {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Goal goal = (Goal) o;
+        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(user, goal.user) && Objects.equals(tasks, goal.tasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, goalStand, dueDate, user, tasks);
     }
 }

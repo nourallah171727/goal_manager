@@ -1,5 +1,8 @@
 package com.example.demo.model;
 import jakarta.persistence.*;
+
+import java.util.Objects;
+
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -59,5 +62,18 @@ public class Task {
 
     public void setGoal(Goal goal) {
         this.goal = goal;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id) && Objects.equals(name, task.name) && taskStatus == task.taskStatus && Objects.equals(goal, task.goal);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, taskStatus, goal);
     }
 }
