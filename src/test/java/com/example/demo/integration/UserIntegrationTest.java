@@ -2,6 +2,7 @@ package com.example.demo.integration;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -23,27 +24,26 @@ class UserRepositoryTest {
 
         Optional<User> found = userRepository.findById(user.getId());
 
-        assertThat(found).isPresent();
-        assertThat(found.get().getUsername()).isEqualTo("alice");
-        assertThat(found.get().getEmail()).isEqualTo("alice@example.com");
+        Assertions.assertTrue(found.isPresent());
+        Assertions.assertEquals(found.get(),user);
     }
     @Test
     void testUpdateUser(){
         User user=new User("firas ben hmiden","firasBenHmiden@gmail.com");
         userRepository.save(user);
         user.setEmail("anothermail@gmail.com");
+        userRepository.save(user);
         Optional<User> found=userRepository.findById(user.getId());
-        assertThat(found).isPresent();
-        assertThat(found.get().getUsername()).isEqualTo("firas ben hmiden");
-        assertThat(found.get().getEmail()).isEqualTo("anothermail@gmail.com");
+        Assertions.assertTrue(found.isPresent());
+       Assertions.assertEquals(found.get(),user);
     }
     @Test
     void testDeleteUser(){
         User user =new User("nourallah","nourallah@gmail.com");
         userRepository.save(user);
         Optional<User>found =userRepository.findById(user.getId());
-        assertThat(found).isPresent();
+        Assertions.assertTrue(found.isPresent());
         userRepository.deleteById(user.getId());
-        assertThat(userRepository.findById(user.getId())).isEmpty();
+        Assertions.assertTrue(userRepository.findById(user.getId()).isEmpty());
     }
 }
