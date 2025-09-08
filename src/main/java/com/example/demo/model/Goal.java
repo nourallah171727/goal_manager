@@ -17,6 +17,7 @@ public class Goal {
     @Column(name = "name", length = 20)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "stand")
     private GoalStand goalStand;
     
@@ -74,6 +75,10 @@ public class Goal {
 
     public Long getId() {
         return id;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
     }
 
     public void setId(Long id) {
