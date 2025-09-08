@@ -19,6 +19,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+    //assumptions from validation layer:
+    //username and email are never null
+    //goals set is always initialized to an empty hashset , every attempt to add goals through user api is automatically ignored
 
     @Mock
     private UserRepository userRepository;
@@ -30,13 +33,6 @@ class UserServiceTest {
     void setUp() {
     }
     //validateUser
-    @Test
-    void validateUserHasGoals(){
-        User user=new User();
-        user.getGoals().add(new Goal());
-        IllegalArgumentException ex=Assertions.assertThrows(IllegalArgumentException.class,()->userService.validateUser(user));
-        Assertions.assertEquals("user is not valid",ex.getMessage());
-    }
     @Test
     void validateUserNull(){
         IllegalArgumentException ex=Assertions.assertThrows(IllegalArgumentException.class,()->userService.validateUser(null));
@@ -102,6 +98,25 @@ class UserServiceTest {
 
         Assertions.assertEquals(user, result);
         verify(userRepository).save(user);
+    }
+    @Test
+    void createUserFailSameUserName() {
+        User user = new User("n", "e");
+        userService.createUser(user);
+        User userToTest=new User("n","anotheremail");
+        when(userRepository.existsByUsername("n")).thenReturn(true);
+        IllegalArgumentException e=Assertions.assertThrows(IllegalArgumentException.class,()->userService.createUser(userToTest));
+        Assertions.assertEquals("name already used",e.getMessage());
+    }
+    @Test
+    void createUserFailSameEmail(){
+        User user = new User("name1", "e");
+        userService.createUser(user);
+        User userToTest=new User("name2","e");
+        when(userRepository.existsByUsername("name2")).thenReturn(false);
+        when(userRepository.existsByEmail("e")).thenReturn(true);
+        IllegalArgumentException e=Assertions.assertThrows(IllegalArgumentException.class,()->userService.createUser(userToTest));
+        Assertions.assertEquals("email already used",e.getMessage());
     }
 
     // --- updateUser ---

@@ -1,4 +1,5 @@
 package com.example.demo.model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,17 +29,14 @@ public class User {
     @Column(name="email")
     private String email;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Goal>goals=new HashSet<>();
 
     public User() {
-        this.createdAt=LocalDateTime.now();
     }
 
     public User(String username, String email) {
-        this();
         this.username = username;
         this.email = email;
     }
@@ -67,13 +65,9 @@ public class User {
         this.email = email;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -93,7 +87,6 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", createdAt=" + createdAt +
                 ", goals=" + goals +
                 '}';
     }
