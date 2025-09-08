@@ -35,6 +35,9 @@ public class GoalService {
         if (goal.getId() != null) {
             throw new IllegalArgumentException("goal should not already have an ID!");
         }
+        if(goal.getUser()==null){
+            throw new IllegalArgumentException("goal must be accorded with its User");
+        }
         return repository.save(goal);
     }
 

@@ -13,6 +13,11 @@ public class UserService {
     public UserService(UserRepository repository){
         this.repository = repository;
     }
+    public void  validateUser(User user){
+        if(user==null || user.getId()!=null ||! user.getGoals().isEmpty()){
+            throw new IllegalArgumentException("user is not valid");
+        }
+    }
     public User getUserById(Long userId){
         if(userId==null){
             throw new IllegalArgumentException("userId is null");
@@ -23,31 +28,18 @@ public class UserService {
         return repository.findAll();
     }
     public User createUser(User user){
-        if(user==null){
-            throw new IllegalArgumentException("user should not be null");
-        }
-        if(user.getId()!=null){
-            throw new IllegalArgumentException("user should not already have an ID!");
-        }
-        if(user.getUsername() == null || user.getEmail() == null){
-            throw new IllegalArgumentException("user should have a username and an email");
-        }
-        if (repository.existsByEmail(user.getEmail()) || repository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("user should have a usique username and a unique email");
-        }
+        validateUser(user);
         return repository.save(user);
     }
     public User updateUser(Long id , User user){
-        if(user==null){
-            throw new IllegalArgumentException("user should not be null");
-        }
-        if(user.getId()==null || repository.findById(id).isEmpty()){ //tested
-            throw new IllegalArgumentException("user must already be in the db");
+        validateUser(user);
+        if(repository.findById(id).isEmpty()){
+            throw new IllegalArgumentException("user should already be in db");
         }
         return repository.save(user);
     }
     public void deleteById(Long id){
-        if(id==null || repository.findById(id).isEmpty()){
+        if(repository.findById(id).isEmpty()){
             throw new IllegalArgumentException("user must already be in the db");
         }
         repository.deleteById(id);
