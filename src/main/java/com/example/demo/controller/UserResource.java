@@ -4,6 +4,7 @@ import com.example.demo.model.Task;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) { //tested
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) { //tested
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
         } catch (Exception e) {
@@ -46,7 +47,7 @@ public class UserResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @Valid @RequestBody User userDetails) {
         try {
             return ResponseEntity.ok(userService.updateUser(id, userDetails));
         } catch (Exception e) {

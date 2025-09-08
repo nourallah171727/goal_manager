@@ -1,5 +1,7 @@
 package com.example.demo.model;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -19,11 +21,11 @@ public class User {
     public void setGoals(Set<Goal> goals) {
         this.goals = goals;
     }
-
-    @Column(name="username",nullable = false, unique = true)
+    @NotNull
+    @Column(name="username")
     private String username;
-
-    @Column(name="email",nullable = false, unique = true)
+    @NotNull
+    @Column(name="email")
     private String email;
 
     @Column(name = "created_at")
@@ -31,12 +33,14 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Goal>goals=new HashSet<>();
 
-    public User() {}
+    public User() {
+        this.createdAt=LocalDateTime.now();
+    }
 
     public User(String username, String email) {
+        this();
         this.username = username;
         this.email = email;
-        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {

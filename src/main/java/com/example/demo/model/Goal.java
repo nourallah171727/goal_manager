@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,20 +15,20 @@ public class Goal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "goal_id", nullable = false, unique = true)
+    @Column(name = "goal_id")
     private Long id;
     
-    @Column(name = "name", length = 20)
+    @Column(name = "name")
     private String name;
     @Enumerated(EnumType.STRING)
     @Column(name = "stand")
     private GoalStand goalStand;
-    
+
     @Column(name = "due_date")
     private LocalDateTime dueDate;
     
     @ManyToOne
-    @JoinColumn(name = "goal_user", nullable = false)
+    @JoinColumn(name = "goal_user")
     private User user;
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Task> tasks=new HashSet<>();

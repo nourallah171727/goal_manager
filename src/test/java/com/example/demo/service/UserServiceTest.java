@@ -1,4 +1,5 @@
 package com.example.demo.service;
+import com.example.demo.model.Goal;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,6 +28,26 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+    }
+    //validateUser
+    @Test
+    void validateUserHasGoals(){
+        User user=new User();
+        user.getGoals().add(new Goal());
+        IllegalArgumentException ex=Assertions.assertThrows(IllegalArgumentException.class,()->userService.validateUser(user));
+        Assertions.assertEquals("user is not valid",ex.getMessage());
+    }
+    @Test
+    void validateUserNull(){
+        IllegalArgumentException ex=Assertions.assertThrows(IllegalArgumentException.class,()->userService.validateUser(null));
+        Assertions.assertEquals("user is not valid",ex.getMessage());
+    }
+    @Test
+    void validateUserHasId(){
+        User user=new User();
+        user.setId(1L);
+        IllegalArgumentException ex=Assertions.assertThrows(IllegalArgumentException.class,()->userService.validateUser(user));
+        Assertions.assertEquals("user is not valid",ex.getMessage());
     }
 
     // --- getUserById ---
@@ -73,26 +94,6 @@ class UserServiceTest {
 
     // --- createUser ---
     @Test
-    void createUserNull() {
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.createUser(null)
-        );
-        Assertions.assertEquals("user should not be null", ex.getMessage());
-    }
-
-    @Test
-    void createUserAlreadyHasId() {
-        User user = new User("n", "e");
-        user.setId(42L);
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.createUser(user)
-        );
-        Assertions.assertEquals("user should not already have an ID!", ex.getMessage());
-    }
-
-    @Test
     void createUserValid() {
         User user = new User("n", "e");
         when(userRepository.save(user)).thenReturn(user);
@@ -104,14 +105,7 @@ class UserServiceTest {
     }
 
     // --- updateUser ---
-    @Test
-    void updateUserNullUser() {
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.updateUser(42L, null)
-        );
-        Assertions.assertEquals("user should not be null", ex.getMessage());
-    }
+
 
     @Test
     void updateUserNoId() {
@@ -121,19 +115,19 @@ class UserServiceTest {
                 IllegalArgumentException.class,
                 () -> userService.updateUser(42L, user)
         );
-        Assertions.assertEquals("user must already be in the db", ex.getMessage());
+        Assertions.assertEquals("user should already be in db", ex.getMessage());
     }
 
     @Test
     void updateUserValid() {
         User user = new User("n", "e");
-        user.setId(42L);
         when(userRepository.findById(42L)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
 
         User result = userService.updateUser(42L, user);
 
         Assertions.assertEquals(user, result);
+        verify(userRepository).findById(42L);
         verify(userRepository).save(user);
     }
 
