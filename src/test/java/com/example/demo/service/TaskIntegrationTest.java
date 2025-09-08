@@ -72,4 +72,6 @@ public class TaskIntegrationTest {
         assertNotNull(firstTaskGoal);
         assertEquals(goalDB.get().getName(),firstTaskGoal.getName());
     }
+
+    
 }
