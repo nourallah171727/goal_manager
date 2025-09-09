@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -80,5 +82,28 @@ public class TaskIntegrationTest {
         assertEquals(goalDB.get().getName(),firstTaskGoal.getName());
     }
 
+
+    @Test
+    void saveMultipleTasks(){
+        Task task2 = new Task("attend the lectures", goal);
+        taskRepository.save(task2);
+        entityManager.flush();
+
+        entityManager.clear();
+        Optional<Goal> goalDB = goalRepository.findById(goal.getId());
+        assertTrue(goalDB.isPresent());
+        Set<Task> taskGoalDB = goalDB.get().getTasks();
+        assertNotNull(taskGoalDB);
+        assertEquals(2, taskGoalDB.size());
+        Iterator<Task> it = taskGoalDB.iterator();
+        Task retrievedTask = it.next();
+        assertNotNull(retrievedTask);
+        Task retrievedTask2 = it.next();
+        assertNotNull(retrievedTask2);
+        assertTrue(task.getName().equals(retrievedTask.getName()) ^task.getName().equals(retrievedTask2.getName()));
+        assertTrue(task2.getName().equals(retrievedTask.getName()) ^task2.getName().equals(retrievedTask2.getName()));
+        assertEquals(goalDB.get().getName(), retrievedTask.getGoal().getName());
+        assertEquals(goalDB.get().getName(), retrievedTask2.getGoal().getName());
+    }
     
 }
