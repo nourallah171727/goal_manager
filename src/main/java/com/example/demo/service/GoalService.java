@@ -45,9 +45,14 @@ public class GoalService {
         if (goal == null) {
             throw new IllegalArgumentException("goal should not be null");
         }
-        if (goal.getId() == null || repository.findById(id).isEmpty()) {
+        if (repository.findById(id).isEmpty()) {
             throw new IllegalArgumentException("goal must already be in the db");
         }
+        if(goal.getId()!=null){
+            throw new IllegalArgumentException("goal object shall not contain an id , you must update only through path variable");
+        }
+        goal.setId(id);
+
         return repository.save(goal);
     }
 

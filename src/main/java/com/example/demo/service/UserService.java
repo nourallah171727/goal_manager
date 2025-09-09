@@ -22,9 +22,6 @@ public class UserService {
         }
     }
     public User getUserById(Long userId){
-        if(userId==null){
-            throw new IllegalArgumentException("userId is null");
-        }
         return repository.findById(userId).orElseThrow(()->new IllegalArgumentException("no user with such ID"));
     }
     public List<User> getUsers(){
@@ -51,6 +48,7 @@ public class UserService {
         if(repository.existsByEmail(user.getEmail())){
             throw new IllegalArgumentException("email already exists");
         }
+        user.setId(id);
         return repository.save(user);
     }
     public void deleteById(Long id){

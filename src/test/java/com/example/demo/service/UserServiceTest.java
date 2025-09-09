@@ -135,15 +135,16 @@ class UserServiceTest {
 
     @Test
     void updateUserValid() {
-        User user = new User("n", "e");
-        when(userRepository.findById(42L)).thenReturn(Optional.of(user));
-        when(userRepository.save(user)).thenReturn(user);
+        User oldUser=new User("old","old@gmail.com");
+        User updatedUser = new User("n", "e");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(oldUser));
+        when(userRepository.save(updatedUser)).thenReturn(updatedUser);
 
-        User result = userService.updateUser(42L, user);
+        User result = userService.updateUser(1L, updatedUser);
 
-        Assertions.assertEquals(user, result);
-        verify(userRepository).findById(42L);
-        verify(userRepository).save(user);
+        Assertions.assertEquals(updatedUser, result);
+        verify(userRepository).findById(1L);
+        verify(userRepository).save(updatedUser);
     }
 
     // --- deleteById ---

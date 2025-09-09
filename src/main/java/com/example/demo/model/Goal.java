@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
@@ -17,7 +19,7 @@ public class Goal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "goal_id")
     private Long id;
-    
+    @NotNull
     @Column(name = "name")
     private String name;
     @Enumerated(EnumType.STRING)
@@ -30,6 +32,7 @@ public class Goal {
     @ManyToOne
     @JoinColumn(name = "goal_user")
     private User user;
+    @JsonIgnore
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Task> tasks=new HashSet<>();
 
