@@ -1,55 +1,58 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.DTOMapper;
+import com.example.demo.dto.UserCreateDTO;
+import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
     //assumptions from validation layer:
     //username and email are never null
     //goals set is always initialized to an empty hashset , every attempt to add goals through user api is automatically ignored
     private final UserRepository repository;
+    private final DTOMapper dtoMapper;
     @Autowired
-    public UserService(UserRepository repository){
+    public UserService(UserRepository repository,DTOMapper dtoMapper){
         this.repository = repository;
+        this.dtoMapper=dtoMapper;
     }
-    public void  validateUser(User user){
-        if(user==null || user.getId()!=null ){
-            throw new IllegalArgumentException("user is not valid");
-        }
+    public UserResponseDTO getUserById(Long userId){
+        return dtoMapper.userToResponseDTO(repository.findById(userId).orElseThrow(()->new IllegalArgumentException("no user with such ID")));
     }
-    public User getUserById(Long userId){
-        return repository.findById(userId).orElseThrow(()->new IllegalArgumentException("no user with such ID"));
+    public List<UserResponseDTO> getUsers(){
+        return repository.findAll().stream().map(e->dtoMapper.userToResponseDTO(e)).collect(Collectors.toList());
     }
-    public List<User> getUsers(){
-        return repository.findAll();
-    }
-    public User createUser(User user){
-        validateUser(user);
-        if(repository.existsByUsername(user.getUsername())){
+    public UserResponseDTO createUser(UserCreateDTO user){
+        if(repository.existsByUsername(user.username())){
             throw new IllegalArgumentException("name already used");
         }
-        if(repository.existsByEmail(user.getEmail())){
+        if(repository.existsByEmail(user.email())){
             throw new IllegalArgumentException("email already used");
         }
-        return repository.save(user);
+        return dtoMapper.userToResponseDTO(repository.save(dtoMapper.createDtoToUser(user)));
     }
-    public User updateUser(Long id , User user){
-        validateUser(user);
+    public UserResponseDTO updateUser(Long id , UserUpdateDTO user){
         if(repository.findById(id).isEmpty()){
             throw new IllegalArgumentException("user should already be in db");
         }
-        if(repository.existsByUsername(user.getUsername())){
+        if(repository.existsByUsername(user.username())){
             throw new IllegalArgumentException("name already exists");
         }
-        if(repository.existsByEmail(user.getEmail())){
+        if(repository.existsByEmail(user.email())){
             throw new IllegalArgumentException("email already exists");
         }
-        user.setId(id);
-        return repository.save(user);
+        //setting id to truly update the user
+        User userToUpdate=dtoMapper.updateDtoToUser(user);
+        userToUpdate.setId(id);
+        return dtoMapper.userToResponseDTO(repository.save(userToUpdate));
     }
     public void deleteById(Long id){
         if(repository.findById(id).isEmpty()){

@@ -34,14 +34,7 @@ public class GoalResource {
         return ResponseEntity.ok(goalService.getGoals());
     }
 
-    @PostMapping("")
-    public ResponseEntity<Goal> addGoal(@PathVariable Long userId ,@RequestBody Goal goal) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(goalService.createGoal(userId,goal));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody Goal goalDetails) {

@@ -2,6 +2,7 @@ package com.example.demo.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
+    @Null(message = "id must no be in request")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +31,9 @@ public class User {
     @Column(name="email")
     private String email;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Null(message = "you must not send user with goals")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<Goal>goals=new HashSet<>();
+    private Set<Goal>goals;
 
     public User() {
     }
