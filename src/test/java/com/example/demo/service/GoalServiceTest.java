@@ -1,170 +1,99 @@
 package com.example.demo.service;
+
+import ch.qos.logback.core.boolex.EvaluationException;
+import com.example.demo.model.Goal;
+import com.example.demo.model.Task;
 import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.demo.repository.GoalRepository;
+import com.example.demo.repository.TaskRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.swing.text.html.Option;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+public class GoalServiceTest {
 
     @Mock
-    private UserRepository userRepository;
+    private GoalRepository goalRepository;
 
     @InjectMocks
-    private UserService userService;
-
-    @BeforeEach
-    void setUp() {
+    private GoalService goalService;
+    private static Goal goal;
+    private static Goal goal2;
+    @BeforeAll
+    static void setup(){
+        goal = new Goal("win the tennis Tournament", new User("mockUser", "mockemail@yahoo.de"));
+        goal2 = new Goal("achieve 36 credits", new User("mockUser2", "mockuser2@Gmail.com"));
     }
-
-    // --- getUserById ---
     @Test
-    void getUserByIdNull() {
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.getUserById(null)
-        );
-        Assertions.assertEquals("userId is null", ex.getMessage());
-    }
-
-    @Test
-    void getUserByIdNotExisting() {
-        when(userRepository.findById(42L)).thenReturn(Optional.empty());
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.getUserById(42L)
-        );
-        Assertions.assertEquals("no user with such ID", ex.getMessage());
+    void testGetGoalByExistingId(){
+        when(goalRepository.findById(123546L)).thenReturn(Optional.of(goal));
+        Goal givenGoal = goalService.getGoalById(123546L);
+        assertNotNull(givenGoal);
+        assertEquals(goal.getName(), givenGoal.getName());
+        assertNotNull(givenGoal.getUser());
+        assertEquals(goal.getUser().getUsername(), givenGoal.getUser().getUsername());
+        assertEquals(goal.getUser().getEmail(), givenGoal.getUser().getEmail());
+        verify(goalRepository).findById(123546L);
     }
 
     @Test
-    void getUserByIdExisting() {
-        User user = new User("name", "email");
-        user.setId(42L);
-        when(userRepository.findById(42L)).thenReturn(Optional.of(user));
-        Assertions.assertEquals(user, userService.getUserById(42L));
-    }
-
-    // --- getUsers ---
-    @Test
-    void getUsersReturnsAll() {
-        User u1 = new User("n1", "e1");
-        User u2 = new User("n2", "e2");
-        when(userRepository.findAll()).thenReturn(List.of(u1, u2));
-
-        List<User> result = userService.getUsers();
-
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.contains(u1));
-        Assertions.assertTrue(result.contains(u2));
-    }
-
-    // --- createUser ---
-    @Test
-    void createUserNull() {
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.createUser(null)
-        );
-        Assertions.assertEquals("user should not be null", ex.getMessage());
+    void testGetGoalByNonExistingId(){
+        when(goalRepository.findById(146587L)).thenReturn(Optional.empty());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()->goalService.getGoalById(146587L));
+        assertEquals("no goal with such ID",ex.getMessage());
+        verify(goalRepository).findById(146587L);
     }
 
     @Test
-    void createUserAlreadyHasId() {
-        User user = new User("n", "e");
-        user.setId(42L);
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.createUser(user)
-        );
-        Assertions.assertEquals("user should not already have an ID!", ex.getMessage());
+    void testGetGoalNullId(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()->goalService.getGoalById(null));
+        assertEquals("goalId is null", ex.getMessage());
     }
 
     @Test
-    void createUserValid() {
-        User user = new User("n", "e");
-        when(userRepository.save(user)).thenReturn(user);
-
-        User result = userService.createUser(user);
-
-        Assertions.assertEquals(user, result);
-        verify(userRepository).save(user);
-    }
-
-    // --- updateUser ---
-    @Test
-    void updateUserNullUser() {
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.updateUser(42L, null)
-        );
-        Assertions.assertEquals("user should not be null", ex.getMessage());
+    void testGetGoalsEmpty(){
+        when(goalRepository.findAll()).thenReturn(new ArrayList<>());
+        List<Goal> goalList = goalService.getGoals();
+        assertNotNull(goalList);
+        assertEquals(0, goalList.size());
+        verify(goalRepository).findAll();
     }
 
     @Test
-    void updateUserNoId() {
-        User user = new User("n", "e"); // id = null
-
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.updateUser(42L, user)
-        );
-        Assertions.assertEquals("user must already be in the db", ex.getMessage());
-    }
-
-    @Test
-    void updateUserValid() {
-        User user = new User("n", "e");
-        user.setId(42L);
-        when(userRepository.findById(42L)).thenReturn(Optional.of(user));
-        when(userRepository.save(user)).thenReturn(user);
-
-        User result = userService.updateUser(42L, user);
-
-        Assertions.assertEquals(user, result);
-        verify(userRepository).save(user);
-    }
-
-    // --- deleteById ---
-    @Test
-    void deleteByIdNull() {
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.deleteById(null)
-        );
-        Assertions.assertEquals("user must already be in the db", ex.getMessage());
-    }
-
-    @Test
-    void deleteByIdNotExisting() {
-        when(userRepository.findById(42L)).thenReturn(Optional.empty());
-
-        IllegalArgumentException ex = Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.deleteById(42L)
-        );
-        Assertions.assertEquals("user must already be in the db", ex.getMessage());
-    }
-
-    @Test
-    void deleteByIdExisting() {
-        User user = new User("n", "e");
-        user.setId(42L);
-        when(userRepository.findById(42L)).thenReturn(Optional.of(user));
-
-        userService.deleteById(42L);
-
-        verify(userRepository).deleteById(42L);
+    void testGetGoalsMulti(){
+        List<Goal> goals = new LinkedList<>();
+        goals.add(goal);
+        goals.add(goal2);
+        when(goalRepository.findAll()).thenReturn(goals);
+        List<Goal> goalList = goalService.getGoals();
+        assertNotNull(goalList);
+        assertEquals(2, goals.size());
+        Goal goalList1 = goalList.get(0);
+        Goal goalList2 = goalList.get(1);
+        assertNotNull(goalList1);
+        assertNotNull(goalList2);
+        assertTrue(goal.getName().equals(goalList1.getName())^goal.getName().equals(goalList2.getName()));
+        assertTrue(goal2.getName().equals(goalList1.getName())^goal2.getName().equals(goalList2.getName()));
+        assertNotNull(goalList1.getUser());
+        assertNotNull(goalList2.getUser());
+        assertTrue(goal.getUser().getUsername().equals(goalList1.getUser().getUsername()) ^ goal.getUser().getUsername().equals(goalList2.getUser().getUsername()));
+        assertTrue(goal.getUser().getEmail().equals(goalList1.getUser().getEmail()) ^ goal.getUser().getEmail().equals(goalList2.getUser().getEmail()));
+        assertTrue(goal2.getUser().getUsername().equals(goalList1.getUser().getUsername()) ^ goal2.getUser().getUsername().equals(goalList2.getUser().getUsername()));
+        assertTrue(goal2.getUser().getEmail().equals(goalList1.getUser().getEmail()) ^ goal2.getUser().getEmail().equals(goalList2.getUser().getEmail()));
     }
 }
