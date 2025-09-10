@@ -34,10 +34,10 @@ public class GoalResource {
         return ResponseEntity.ok(goalService.getGoals());
     }
 
-    @PostMapping("")
-    public ResponseEntity<Goal> addGoal(@RequestBody Goal goal) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<Goal> addGoal(@PathVariable("userId") Long userId, @RequestBody Goal goal) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(goalService.createGoal(goal));
+            return ResponseEntity.status(HttpStatus.CREATED).body(goalService.createGoal(goal, userId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

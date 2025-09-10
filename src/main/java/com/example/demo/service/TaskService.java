@@ -2,29 +2,37 @@ package com.example.demo.service;
 import com.example.demo.model.Goal;
 import com.example.demo.model.Task;
 import com.example.demo.model.TaskStatus;
+import com.example.demo.repository.GoalRepository;
 import com.example.demo.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-//here why transactional?
 @Transactional
 public class TaskService {
+    private final GoalRepository goalRepository;
     private final TaskRepository repository;
     @Autowired
-    public TaskService(TaskRepository repository){
+    public TaskService(TaskRepository repository, GoalRepository goalRepository){
         this.repository = repository;
+        this.goalRepository = goalRepository;
     }
-    public Task createTask(String name, Goal goal){
+    public Task createTask(Task task, Long goalId){
+        Optional<Goal> optGoal = goalRepository.findById(goalId);
+        if (optGoal.isEmpty()){
+            throw new IllegalArgumentException("the given goal ID must be valid");
+        }
+        Goal goal = optGoal.get();
+
         List<Task> tasks = repository.findByGoal(goal);
-        //I think that here it should be an OR not an END
-        if(tasks.stream().anyMatch(t->t.getName().equals(name) && t.getGoal().getId().equals(goal.getId()))){
+        if(tasks.stream().anyMatch(t->t.getName().equals(task.getName()))){
             throw new IllegalArgumentException("task already exists!");
         }
-        Task task = new Task(name, goal);
+        task.setGoal(goal);
         return repository.save(task);
     }
     public void deleteTask(Long id){
@@ -43,7 +51,6 @@ public class TaskService {
     }
     public List<Task> getTasksByGoalId(Long id){
         List<Task> tasks = repository.findByGoal_Id(id);
-        //empty list of tasks should also be ok no ? I think if goal does not exist is a problem n bot an empty list of tasks!
         if(tasks.isEmpty()) throw new IllegalArgumentException("no task  associated to such a goal");
         return tasks;
     }

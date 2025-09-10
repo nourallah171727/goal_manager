@@ -36,11 +36,11 @@ public class TaskResource {
     }
     //I think we should just have goal_id as path variable !
     //instead of .ok which has 200 http code , we should use http.created which has status code 204 , used for created
-    @PostMapping
-    public ResponseEntity<Task> createTask(@RequestParam("name") String name, @RequestBody Goal goal){
+    @PostMapping("/{goalId}")
+    public ResponseEntity<Task> createTask(@PathVariable("goalId") Long goalId, @RequestBody Task task){
         try {
-            Task task = service.createTask(name, goal);
-            return ResponseEntity.ok(task);
+            Task createdTask = service.createTask(task, goalId);
+            return ResponseEntity.ok(createdTask);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
