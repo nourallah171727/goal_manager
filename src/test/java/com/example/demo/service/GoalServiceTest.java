@@ -143,4 +143,62 @@ public class GoalServiceTest {
         verify(userRepository).findById(145687L);
         verify(goalRepository).save(goal);
     }
+    @Test
+    void testUpdateGoalNullId(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()->goalService.updateGoal(null, goal));
+        assertEquals("id must not be null", ex.getMessage());
+        verifyNoInteractions(goalRepository);
+    }
+    @Test
+    void testUpdateNullGoal(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> goalService.updateGoal(1245L, null));
+        assertEquals( "goal should not be null", ex.getMessage());
+        verifyNoInteractions(goalRepository);
+    }
+    @Test
+    void testUpdateGoalNonExistingId(){
+        when(goalRepository.findById(12453L)).thenReturn(Optional.empty());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.updateGoal(12453L, goal));
+        assertEquals( "goal must already be in the db", ex.getMessage());
+        verify(goalRepository).findById(12453L);
+    }
+    @Test
+    void testUpdateGoalNotNullId(){
+        goal.setId(821478L);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.updateGoal(821478L, goal));
+        assertEquals("goalId must not be null", ex.getMessage());
+        verifyNoInteractions(goalRepository);
+    }
+    @Test
+    void testUpdateGoalSuccessful(){
+        when(goalRepository.findById(4605242L)).thenReturn(Optional.of(goal));
+        when(goalRepository.save(goal2)).thenReturn(goal2);
+        Goal updatedGoal = goalService.updateGoal(4605242L, goal2);
+        assertNotNull(updatedGoal);
+        assertEquals(goal2.getName(), updatedGoal.getName());
+        assertEquals(4605242L, updatedGoal.getId());
+        verify(goalRepository).findById(4605242L);
+        verify(goalRepository).save(any());
+    }
+    @Test
+    void testDeleteGoalNullId(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.deleteById(null));
+        assertEquals("goal must already be in the db", ex.getMessage());
+        verifyNoInteractions(goalRepository);
+    }
+    @Test
+    void testDeleteGoalNonExistingId(){
+        when(goalRepository.findById(87564L)).thenReturn(Optional.empty());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.deleteById(87564L));
+        assertEquals("goal must already be in the db", ex.getMessage());
+        verify(goalRepository).findById(87564L);
+    }
+    @Test
+    void testDeleteGoalSuccessful(){
+        when(goalRepository.findById(457898L)).thenReturn(Optional.of(goal));
+        goalService.deleteById(457898L);
+        verify(goalRepository).findById(457898L);
+        verify(goalRepository).save(goal);
+        verifyNoMoreInteractions(goalRepository);
+    }
 }
