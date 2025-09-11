@@ -1,11 +1,9 @@
 package com.example.demo.service;
 
-import ch.qos.logback.core.boolex.EvaluationException;
 import com.example.demo.model.Goal;
-import com.example.demo.model.Task;
 import com.example.demo.model.User;
 import com.example.demo.repository.GoalRepository;
-import com.example.demo.repository.TaskRepository;
+import com.example.demo.repository.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,22 +11,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.swing.text.html.Option;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GoalServiceTest {
 
     @Mock
     private GoalRepository goalRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private GoalService goalService;
@@ -95,5 +92,55 @@ public class GoalServiceTest {
         assertTrue(goal.getUser().getEmail().equals(goalList1.getUser().getEmail()) ^ goal.getUser().getEmail().equals(goalList2.getUser().getEmail()));
         assertTrue(goal2.getUser().getUsername().equals(goalList1.getUser().getUsername()) ^ goal2.getUser().getUsername().equals(goalList2.getUser().getUsername()));
         assertTrue(goal2.getUser().getEmail().equals(goalList1.getUser().getEmail()) ^ goal2.getUser().getEmail().equals(goalList2.getUser().getEmail()));
+    }
+    @Test
+    void testCreateGoalNullId(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()->goalService.createGoal(new Goal("win the tennis Tournament", new User("mockUser", "mockemail@yahoo.de")), null ));
+        assertEquals("userId should not be null", ex.getMessage());
+    }
+    @Test
+    void testCreateGaolNonExistingId(){
+        when(userRepository.findById(145687L)).thenReturn(Optional.empty());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.createGoal(new Goal("win the tennis Tournament", new User("mockUser", "mockemail@yahoo.de")), 145687L ));
+        assertEquals("userId should be a valid Id", ex.getMessage());
+        verify(userRepository).findById(145687L);
+        verifyNoInteractions(goalRepository);
+    }
+    @Test
+    void testCreateNullGoal(){
+        when(userRepository.findById(145687L)).thenReturn(Optional.of(new User("username", "useremail@gmail.com")));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.createGoal(null, 145687L ));
+        assertEquals("goal should not be null", ex.getMessage());
+        verify(userRepository).findById(145687L);
+        verifyNoInteractions(goalRepository);
+    }
+    @Test
+    void testCreateInvalidGoal(){
+        when(userRepository.findById(145687L)).thenReturn(Optional.of(new User("username", "useremail@gmail.com")));
+        goal.setId(45896L);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.createGoal(goal, 145687L ));
+        assertEquals("goal should not have an ID yet!", ex.getMessage());
+        verify(userRepository).findById(145687L);
+        verifyNoInteractions(goalRepository);
+    }
+
+    @Test
+    void testCreateGoalSuccessful(){
+        when(userRepository.findById(145687L)).thenReturn(Optional.of(new User("username", "useremail@gmail.com")));
+        when(goalRepository.save(goal)).thenAnswer(invocation -> {
+            Goal g = invocation.getArgument(0);
+            g.setId(1254L); // simulate DB-generated ID
+            return g;
+        });
+        assertNull(goal.getId());
+        Goal savedGoal = goalService.createGoal(goal, 145687L);
+        assertNotNull(savedGoal);
+        assertNotNull(savedGoal.getId());
+        assertEquals(goal.getName(), savedGoal.getName());
+        assertNotNull(savedGoal.getUser());
+        assertEquals("username", savedGoal.getUser().getUsername());
+        assertEquals("useremail@gmail.com", savedGoal.getUser().getEmail());
+        verify(userRepository).findById(145687L);
+        verify(goalRepository).save(goal);
     }
 }

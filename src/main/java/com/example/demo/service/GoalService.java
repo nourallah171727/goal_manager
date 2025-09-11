@@ -46,7 +46,7 @@ public class GoalService {
             throw new IllegalArgumentException("goal should not be null");
         }
         if (goal.getId() != null) {
-            throw new IllegalArgumentException("goal should not already have an ID!");
+            throw new IllegalArgumentException("goal should not have an ID yet!");
         }
         goal.setUser(optUser.get());
         return repository.save(goal);
