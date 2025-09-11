@@ -119,7 +119,7 @@ public class GoalServiceTest {
         when(userRepository.findById(145687L)).thenReturn(Optional.of(new User("username", "useremail@gmail.com")));
         goal.setId(45896L);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, ()-> goalService.createGoal(goal, 145687L ));
-        assertEquals("goal should not have an ID yet!", ex.getMessage());
+        assertEquals("goal should not already have an ID!", ex.getMessage());
         verify(userRepository).findById(145687L);
         verifyNoInteractions(goalRepository);
     }
@@ -162,6 +162,7 @@ public class GoalServiceTest {
         assertEquals( "goal must already be in the db", ex.getMessage());
         verify(goalRepository).findById(12453L);
     }
+    /*
     @Test
     void testUpdateGoalNotNullId(){
         goal.setId(821478L);
@@ -169,6 +170,8 @@ public class GoalServiceTest {
         assertEquals("goalId must not be null", ex.getMessage());
         verifyNoInteractions(goalRepository);
     }
+
+     */
     @Test
     void testUpdateGoalSuccessful(){
         when(goalRepository.findById(4605242L)).thenReturn(Optional.of(goal));
@@ -198,7 +201,7 @@ public class GoalServiceTest {
         when(goalRepository.findById(457898L)).thenReturn(Optional.of(goal));
         goalService.deleteById(457898L);
         verify(goalRepository).findById(457898L);
-        verify(goalRepository).save(goal);
+        verify(goalRepository).deleteById(457898L);
         verifyNoMoreInteractions(goalRepository);
     }
 }

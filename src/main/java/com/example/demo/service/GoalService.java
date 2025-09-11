@@ -53,6 +53,9 @@ public class GoalService {
     }
 
     public Goal updateGoal(Long id, Goal goal) {
+        if(id==null){
+            throw new IllegalArgumentException("id must not be null");
+        }
         if (goal == null) {
             throw new IllegalArgumentException("goal should not be null");
         }
