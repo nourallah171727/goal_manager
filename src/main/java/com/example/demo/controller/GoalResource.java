@@ -35,7 +35,16 @@ public class GoalResource {
     }
 
 
-
+    @PostMapping("/{userId}")
+    public ResponseEntity<Goal> createGoal(@PathVariable("userId") Long userId,
+                                           @RequestBody Goal goal) {
+        try {
+            Goal createdGoal = goalService.createGoal(goal, userId);
+            return ResponseEntity.ok(createdGoal);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
     @PutMapping("/{id}")
     public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody Goal goalDetails) {
         try {

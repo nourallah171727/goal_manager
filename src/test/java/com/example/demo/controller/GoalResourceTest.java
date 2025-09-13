@@ -53,7 +53,34 @@ class GoalResourceTest {
         mockMvc.perform(get("/goal/99"))
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void createGoal_valid_returns200() throws Exception {
+        Goal request = new Goal("New Goal", new User());
+        Goal saved = new Goal("New Goal", new User());
+        saved.setId(1L);
 
+        when(goalService.createGoal(any(Goal.class), eq(42L))).thenReturn(saved);
+
+        mockMvc.perform(post("/goal/42")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("New Goal"));
+    }
+
+    @Test
+    void createGoal_invalidUser_returns400() throws Exception {
+        Goal request = new Goal("Invalid Goal", new User());
+
+        when(goalService.createGoal(any(Goal.class), eq(99L)))
+                .thenThrow(new IllegalArgumentException("userId should be a valid Id"));
+
+        mockMvc.perform(post("/goal/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
     @Test
     void getAllGoals_returnsList() throws Exception {
         Goal g1 = new Goal("Goal A", new User());
