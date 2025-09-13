@@ -12,7 +12,6 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
-    @Null(message = "id must no be in request")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,14 +23,11 @@ public class User {
     public void setGoals(Set<Goal> goals) {
         this.goals = goals;
     }
-    @NotNull
     @Column(name="username")
     private String username;
-    @NotNull
     @Column(name="email")
     private String email;
 
-    @Null(message = "you must not send user with goals")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Goal>goals;
 

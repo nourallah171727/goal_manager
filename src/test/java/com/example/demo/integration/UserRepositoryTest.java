@@ -44,7 +44,7 @@ class UserRepositoryTest {
         entityManager.clear();
         Optional<User> found=userRepository.findById(user.getId());
         Assertions.assertTrue(found.isPresent());
-       Assertions.assertEquals(found.get(),user);
+        Assertions.assertEquals(found.get(),user);
     }
     @Test
     void testDeleteUser(){
