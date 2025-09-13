@@ -1,53 +1,61 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.DTOMapper;
+import com.example.demo.dto.UserCreateDTO;
+import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
+    //assumptions from validation layer:
+    //username and email are never null
+    //goals set is always initialized to an empty hashset , every attempt to add goals through user api is automatically ignored
     private final UserRepository repository;
+    private final DTOMapper dtoMapper;
     @Autowired
-    public UserService(UserRepository repository){
+    public UserService(UserRepository repository,DTOMapper dtoMapper){
         this.repository = repository;
+        this.dtoMapper=dtoMapper;
     }
-    public User getUserById(Long userId){
-        if(userId==null){
-            throw new IllegalArgumentException("userId is null");
-        }
-        return repository.findById(userId).orElseThrow(()->new IllegalArgumentException("no user with such ID"));
+    public UserResponseDTO getUserById(Long userId){
+        return dtoMapper.userToResponseDTO(repository.findById(userId).orElseThrow(()->new IllegalArgumentException("no user with such ID")));
     }
-    public List<User> getUsers(){
-        return repository.findAll();
+    public List<UserResponseDTO> getUsers(){
+        return repository.findAll().stream().map(e->dtoMapper.userToResponseDTO(e)).collect(Collectors.toList());
     }
-    public User createUser(User user){
-        if(user==null){
-            throw new IllegalArgumentException("user should not be null");
+    public UserResponseDTO createUser(UserCreateDTO user){
+        if(repository.existsByUsername(user.username())){
+            throw new IllegalArgumentException("name already used");
         }
-        if(user.getId()!=null){
-            throw new IllegalArgumentException("user should not already have an ID!");
+        if(repository.existsByEmail(user.email())){
+            throw new IllegalArgumentException("email already used");
         }
-        if(user.getUsername() == null || user.getEmail() == null){
-            throw new IllegalArgumentException("user should have a username and an email");
-        }
-        if (repository.existsByEmail(user.getEmail()) || repository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("user should have a usique username and a unique email");
-        }
-        return repository.save(user);
+        return dtoMapper.userToResponseDTO(repository.save(dtoMapper.createDtoToUser(user)));
     }
-    public User updateUser(Long id , User user){
-        if(user==null){
-            throw new IllegalArgumentException("user should not be null");
+    public UserResponseDTO updateUser(Long id , UserUpdateDTO user){
+        if(repository.findById(id).isEmpty()){
+            throw new IllegalArgumentException("user should already be in db");
         }
-        if(user.getId()==null || repository.findById(id).isEmpty()){ //tested
-            throw new IllegalArgumentException("user must already be in the db");
+        if(repository.existsByUsername(user.username())){
+            throw new IllegalArgumentException("name already exists");
         }
-        return repository.save(user);
+        if(repository.existsByEmail(user.email())){
+            throw new IllegalArgumentException("email already exists");
+        }
+        //setting id to truly update the user
+        User userToUpdate=dtoMapper.updateDtoToUser(user);
+        userToUpdate.setId(id);
+        return dtoMapper.userToResponseDTO(repository.save(userToUpdate));
     }
     public void deleteById(Long id){
-        if(id==null || repository.findById(id).isEmpty()){
+        if(repository.findById(id).isEmpty()){
             throw new IllegalArgumentException("user must already be in the db");
         }
         repository.deleteById(id);

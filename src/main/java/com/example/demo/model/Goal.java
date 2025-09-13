@@ -1,31 +1,38 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "goals")
 public class Goal {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "goal_id", nullable = false, unique = true)
+    @Column(name = "goal_id")
     private Long id;
-    
-    @Column(name = "name", length = 20)
+    @NotNull
+    @Column(name = "name")
     private String name;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "stand")
     private GoalStand goalStand;
-    
+
     @Column(name = "due_date")
     private LocalDateTime dueDate;
     
     @ManyToOne
-    @JoinColumn(name = "goal_user", nullable = false)
+    @JoinColumn(name = "goal_user")
     private User user;
+    @JsonIgnore
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Task> tasks=new HashSet<>();
 
@@ -78,5 +85,26 @@ public class Goal {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Goal goal = (Goal) o;
+        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(user, goal.user) ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, goalStand, dueDate, user);
     }
 }

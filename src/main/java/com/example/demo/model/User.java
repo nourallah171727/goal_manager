@@ -1,5 +1,9 @@
 package com.example.demo.model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -8,27 +12,35 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
+    @Null(message = "id must no be in request")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="username",nullable = false, unique = true)
-    private String username;
+    public Set<Goal> getGoals() {
+        return goals;
+    }
 
-    @Column(name="email",nullable = false, unique = true)
+    public void setGoals(Set<Goal> goals) {
+        this.goals = goals;
+    }
+    @NotNull
+    @Column(name="username")
+    private String username;
+    @NotNull
+    @Column(name="email")
     private String email;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Null(message = "you must not send user with goals")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<Goal>goals=new HashSet<>();
+    private Set<Goal>goals;
 
-    public User() {}
+    public User() {
+    }
 
     public User(String username, String email) {
         this.username = username;
         this.email = email;
-        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -55,13 +67,9 @@ public class User {
         this.email = email;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -81,7 +89,6 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", createdAt=" + createdAt +
                 ", goals=" + goals +
                 '}';
     }

@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.User;
+import com.example.demo.dto.UserCreateDTO;
+import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,17 +14,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserResource.class)
 public class UserResourceTest {
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -32,203 +32,127 @@ public class UserResourceTest {
     @MockitoBean
     private UserService service;
 
+    // --- create user ---
     @Test
-    void testCreateUserSuccessful() throws Exception { //throws Exception
-        User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@yahoo.de");
-        when(service.createUser(user)).thenReturn(user);
+    void testCreateUserSuccessful() throws Exception {
+        UserCreateDTO createDTO = new UserCreateDTO("Abderrahmen Firas Ben Hmidene", "thisisanemail@yahoo.de");
+        UserResponseDTO responseDTO = new UserResponseDTO("Abderrahmen Firas Ben Hmidene", "thisisanemail@yahoo.de");
+
+        when(service.createUser(any(UserCreateDTO.class))).thenReturn(responseDTO);
+
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
                 .andExpect(jsonPath("$.email").value("thisisanemail@yahoo.de"));
-        verify(service).createUser(any(User.class));
+
+        verify(service).createUser(any(UserCreateDTO.class));
     }
 
     @Test
-    void testCreateUserFail1() throws Exception {
-        User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@yahoo.fr");
-        user.setId(1458755L);
-        when(service.createUser(user)).thenThrow(new IllegalArgumentException("wrong email"));
-        httpSimulator.perform(post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isBadRequest());
-        verify(service).createUser(any(User.class));
-    }
+    void testCreateUserFail() throws Exception {
+        UserCreateDTO createDTO = new UserCreateDTO("badName", "badMail");
+        when(service.createUser(any(UserCreateDTO.class))).thenThrow(new IllegalArgumentException("wrong email"));
 
-    @Test
-    void testCreateUserFail2() throws Exception {
-        User user = null;
-        when(service.createUser(null)).thenThrow(new IllegalArgumentException("wrong email"));
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void testCreateUserFail3() throws Exception {
-        User user1 = new User("unknown1", "thisisanemail1@gmail.com");
-        User user2 = new User("unknown1", "thisistheemail2@gmail.com");
-        user1.setId(null);
-        user2.setId(null);
-        System.out.println("-----------");
-        System.out.println(user1.toString());
-        System.out.println(user2.toString());
-        AtomicBoolean called = new AtomicBoolean(false);
-        when(service.createUser(any(User.class))).thenAnswer(invocation -> {
-            if (called.get()) {
-                throw new IllegalArgumentException("name already used");
-            } else {
-                called.set(true);
-                return invocation.getArgument(0);
-            }
-        });
-
-        httpSimulator.perform(post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user1)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("unknown1"))
-                .andExpect(jsonPath("$.email").value("thisisanemail1@gmail.com"));
-        httpSimulator.perform(post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user2)))
-                .andExpect(status().isBadRequest());
-        verify(service, times(2)).createUser(any(User.class));
-    }
-
-    @Test
-    void testCreateUserFail4() throws Exception {
-        User user1 = new User("unknown1", "thisisanemail1@gmail.com");
-        User user2 = new User("unknown2", "thisistheemail1@gmail.com");
-        AtomicBoolean called = new AtomicBoolean(false);
-        when(service.createUser(any(User.class))).thenAnswer(invocation -> {
-            if (called.get()) {
-                throw new IllegalArgumentException("name already used");
-            } else {
-                called.set(true);
-                return invocation.getArgument(0);
-            }
-        });
-        httpSimulator.perform(post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user1)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("unknown1"))
-                .andExpect(jsonPath("$.email").value("thisisanemail1@gmail.com"));
-        httpSimulator.perform(post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user2)))
-                .andExpect(status().isBadRequest());
-        verify(service, times(2)).createUser(any(User.class));
-    }
-
-
+    // --- get user ---
     @Test
     void testGetUserSuccess() throws Exception {
-        User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@gmail.com");
-        user.setId(1235586L);
-        when(service.getUserById(1235586L)).thenReturn(user);
-        httpSimulator.perform(get("/user/1235586"))
+        UserResponseDTO responseDTO = new UserResponseDTO("Firas", "mail@gmail.com");
+        when(service.getUserById(123L)).thenReturn(responseDTO);
+
+        httpSimulator.perform(get("/user/123"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
-                .andExpect(jsonPath("$.email").value("thisisanemail@gmail.com"))
-                .andExpect(jsonPath("$.id").value(1235586L));
-        verify(service).getUserById(1235586L);
+                .andExpect(jsonPath("$.username").value("Firas"))
+                .andExpect(jsonPath("$.email").value("mail@gmail.com"));
+
+        verify(service).getUserById(123L);
     }
 
     @Test
     void testGetUserFail() throws Exception {
-        when(service.getUserById(4585585L)).thenThrow(new IllegalArgumentException("no user with such id"));
-        httpSimulator.perform(get("/user/4585585"))
+        when(service.getUserById(999L)).thenThrow(new IllegalArgumentException("no user with such id"));
+
+        httpSimulator.perform(get("/user/999"))
                 .andExpect(status().isBadRequest());
-        verify(service).getUserById(4585585L);
+
+        verify(service).getUserById(999L);
     }
 
+    // --- get all users ---
     @Test
     void testGetAllUsersSuccess() throws Exception {
-        User user1 = new User("unknown1", "thisisanemail1@gmail.com");
-        User user2 = new User("unknown2", "thisisanemail2@gmail.com");
-        List<User> list = new LinkedList<>();
-        list.add(user1);
-        list.add(user2);
+        List<UserResponseDTO> list = new LinkedList<>();
+        list.add(new UserResponseDTO("u1", "u1@mail.com"));
+        list.add(new UserResponseDTO("u2", "u2@mail.com"));
+
         when(service.getUsers()).thenReturn(list);
+
         httpSimulator.perform(get("/user/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].username").value("unknown1"))
-                .andExpect(jsonPath("$[0].email").value("thisisanemail1@gmail.com"))
-                .andExpect(jsonPath("$[1].username").value("unknown2"))
-                .andExpect(jsonPath("$[1].email").value("thisisanemail2@gmail.com"));
+                .andExpect(jsonPath("$[0].username").value("u1"))
+                .andExpect(jsonPath("$[0].email").value("u1@mail.com"))
+                .andExpect(jsonPath("$[1].username").value("u2"))
+                .andExpect(jsonPath("$[1].email").value("u2@mail.com"));
+
         verify(service).getUsers();
     }
 
+    // --- update user ---
     @Test
     void testUpdateUserSuccess() throws Exception {
-        User newUser = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail2@gmail.com");
-        newUser.setId(1234544L);
-        when(service.updateUser(1234544L, newUser)).thenReturn(newUser);
-        httpSimulator.perform(put("/user/1234544")
+        UserUpdateDTO updateDTO = new UserUpdateDTO("Updated", "updated@mail.com");
+        UserResponseDTO responseDTO = new UserResponseDTO("Updated", "updated@mail.com");
+
+        when(service.updateUser(eq(42L), any(UserUpdateDTO.class))).thenReturn(responseDTO);
+
+        httpSimulator.perform(put("/user/42")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newUser)))
+                        .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1234544))
-                .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
-                .andExpect(jsonPath("$.email").value("thisisanemail2@gmail.com"));
-        verify(service).updateUser(1234544L, newUser);
-        assertEquals("Abderrahmen Firas Ben Hmidene", newUser.getUsername());
-        assertEquals("thisisanemail2@gmail.com", newUser.getEmail());
+                .andExpect(jsonPath("$.username").value("Updated"))
+                .andExpect(jsonPath("$.email").value("updated@mail.com"));
+
+        verify(service).updateUser(eq(42L), any(UserUpdateDTO.class));
     }
 
     @Test
-    void testUpdateUserFail1() throws Exception {
-        when(service.updateUser(1215487L, null)).thenThrow(new IllegalArgumentException("user should not be null"));
-        httpSimulator.perform(put("/user/1215487")
+    void testUpdateUserFail() throws Exception {
+        UserUpdateDTO updateDTO = new UserUpdateDTO("bad", "bad");
+        when(service.updateUser(eq(42L), any(UserUpdateDTO.class)))
+                .thenThrow(new IllegalArgumentException("user not found"));
+
+        httpSimulator.perform(put("/user/42")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(null)))
+                        .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void testUpdateUserFail2() throws Exception {
-        User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@gmail.com");
-        user.setId(null);
-        when(service.updateUser(1215487L, user)).thenThrow(new IllegalArgumentException("user must already be in the db"));
-        httpSimulator.perform(put("/user/1215487")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isBadRequest());
-        verify(service).updateUser(1215487L, user);
-    }
-
-    @Test
-    void testUpdateUserFail3() throws Exception {
-        User user = new User("Abderrahmen Firas Ben Hmidene", "thisisanemail@gmail.com");
-        user.setId(1215487L);
-        when(service.updateUser(1215487L, user)).thenThrow(new IllegalArgumentException("user must already be in the db"));
-        httpSimulator.perform(put("/user/1215487")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isBadRequest());
-        verify(service).updateUser(1215487L, user);
-    }
-
+    // --- delete user ---
     @Test
     void testDeleteUserSuccess() throws Exception {
-        doNothing().when(service).deleteById(1235586L);
-        httpSimulator.perform(delete("/user/1235586"))
+        doNothing().when(service).deleteById(42L);
+
+        httpSimulator.perform(delete("/user/42"))
                 .andExpect(status().isNoContent());
-        verify(service).deleteById(1235586L);
+
+        verify(service).deleteById(42L);
     }
 
     @Test
     void testDeleteUserFail() throws Exception {
-        doThrow(new IllegalArgumentException("user must already be in the db"))
-                .when(service).deleteById(1235586L);
-        httpSimulator.perform(delete("/user/1235586"))
+        doThrow(new IllegalArgumentException("user not found")).when(service).deleteById(42L);
+
+        httpSimulator.perform(delete("/user/42"))
                 .andExpect(status().isBadRequest());
-        verify(service).deleteById(1235586L);
+
+        verify(service).deleteById(42L);
     }
 }
