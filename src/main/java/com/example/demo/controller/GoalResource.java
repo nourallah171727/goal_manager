@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Goal;
+import com.example.demo.model.GoalType;
 import com.example.demo.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,15 @@ public class GoalResource {
         return ResponseEntity.ok(goalService.getGoals());
     }
 
-
+    @PostMapping("/create")
+    public ResponseEntity<Goal> createGoal(@RequestBody Goal goal, @RequestParam("userId") Long userId) {
+        try {
+            Goal createdGoal = goalService.createGoal(goal, userId);
+            return ResponseEntity.ok(createdGoal);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody Goal goalDetails) {
@@ -54,4 +63,81 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PostMapping("/{goalId}/join/{userId}")
+    public ResponseEntity<Void> joinGoal(@PathVariable Long goalId, @PathVariable Long userId) {
+        try {
+            goalService.joinGoal(goalId, userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{goalId}/leave/{userId}")
+    public ResponseEntity<Void> leaveGoal(@PathVariable Long goalId, @PathVariable Long userId) {
+        try {
+            goalService.leaveGoal(goalId, userId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/{goalId}/star/{userId}")
+    public ResponseEntity<Void> addStar(@PathVariable Long goalId, @PathVariable Long userId) {
+        try {
+            goalService.addStar(goalId, userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{goalId}/star/{userId}")
+    public ResponseEntity<Void> removeStar(@PathVariable Long goalId, @PathVariable Long userId) {
+        try {
+            goalService.removeStar(goalId, userId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Goal>> findGoalsByCategory(@PathVariable String category) {
+        try {
+            return ResponseEntity.ok(goalService.findGoalsByCategory(category));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<Goal>> findGoalsByType(@PathVariable GoalType type) {
+        try {
+            return ResponseEntity.ok(goalService.findGoalsByType(type));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<List<Goal>> findGoalsByHost(@PathVariable Long hostId) {
+        try {
+            return ResponseEntity.ok(goalService.findGoalsByHost(hostId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/member/{userId}")
+    public ResponseEntity<List<Goal>> findGoalsByMember(@PathVariable Long userId) {
+        try {
+            return ResponseEntity.ok(goalService.findGoalsByMember(userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }
