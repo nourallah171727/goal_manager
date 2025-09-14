@@ -40,11 +40,11 @@ public class Goal {
     private String privateCode;
 
     @Column(name = "votes_to_mark_completed")
-    private int votesToMarkCompleted = 1;
+    private int votesToMarkCompleted = 2;
 
     @ManyToOne
     @JoinColumn(name = "goal_host")
-    private User host;  // host
+    private User host;
 
     @JsonIgnore
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
