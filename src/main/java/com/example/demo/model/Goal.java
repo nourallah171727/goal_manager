@@ -28,23 +28,55 @@ public class Goal {
 
     @Column(name = "due_date")
     private LocalDateTime dueDate;
-    
+
+    @Column(name = "category")
+    private String category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private GoalType type = GoalType.PUBLIC;
+
+    @Column(name = "private_code")
+    private String privateCode;
+
+    @Column(name = "votes_to_mark_completed")
+    private int votesToMarkCompleted = 1;
+
     @ManyToOne
-    @JoinColumn(name = "goal_user")
-    private User user;
+    @JoinColumn(name = "goal_host")
+    private User host;  // host
+
     @JsonIgnore
-    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<Task> tasks=new HashSet<>();
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Task> tasks = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "goal_members",
+            joinColumns = @JoinColumn(name = "goal_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+
+    private Set<User> members = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "goal_stars",
+            joinColumns = @JoinColumn(name = "goal_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> starredBy = new HashSet<>();
+
 
     public Goal() {
         this.goalStand = GoalStand.NOT_STARTED;
         this.dueDate = null;
     }
 
-    public Goal(String name, User user) {
+    public Goal(String name, User host) {
         this();
         this.name = name;
-        this.user = user;
+        this.host = host;
     }
 
     public LocalDateTime getDueDate() {
@@ -72,11 +104,11 @@ public class Goal {
     }
 
     public User getUser() {
-        return user;
+        return host;
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.host = user;
     }
 
     public Long getId() {
@@ -95,16 +127,72 @@ public class Goal {
         this.tasks = tasks;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public GoalType getType() {
+        return type;
+    }
+
+    public void setType(GoalType type) {
+        this.type = type;
+    }
+
+    public String getPrivateCode() {
+        return privateCode;
+    }
+
+    public void setPrivateCode(String privateCode) {
+        this.privateCode = privateCode;
+    }
+
+    public int getVotesToMarkCompleted() {
+        return votesToMarkCompleted;
+    }
+
+    public void setVotesToMarkCompleted(int votesToMarkCompleted) {
+        this.votesToMarkCompleted = votesToMarkCompleted;
+    }
+
+    public User getHost() {
+        return host;
+    }
+
+    public void setHost(User host) {
+        this.host = host;
+    }
+
+    public Set<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<User> members) {
+        this.members = members;
+    }
+
+    public Set<User> getStarredBy() {
+        return starredBy;
+    }
+
+    public void setStarredBy(Set<User> starredBy) {
+        this.starredBy = starredBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Goal goal = (Goal) o;
-        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(user, goal.user) ;
+        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(host, goal.host) ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, goalStand, dueDate, user);
+        return Objects.hash(id, name, goalStand, dueDate, host);
     }
 }

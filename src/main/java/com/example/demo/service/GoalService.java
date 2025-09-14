@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Goal;
+import com.example.demo.model.GoalType;
 import com.example.demo.model.User;
 import com.example.demo.repository.GoalRepository;
 import com.example.demo.repository.UserRepository;
@@ -75,5 +76,75 @@ public class GoalService {
             throw new IllegalArgumentException("goal must already be in the db");
         }
         goalRepository.deleteById(id);
+    }
+
+    private User validateAndGetUser(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId must not be null");
+        }
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("userId must be valid"));
+    }
+    public void joinGoal(Long goalId, Long userId) {
+        Goal goal = getGoalById(goalId);
+        User user = validateAndGetUser(userId);
+        goal.getMembers().add(user);
+        goalRepository.save(goal);
+    }
+    public void leaveGoal(Long goalId, Long userId) {
+        Goal goal = getGoalById(goalId);
+        User user = validateAndGetUser(userId);
+        goal.getMembers().remove(user);
+        goalRepository.save(goal);
+    }
+
+    public void addStar(Long goalId, Long userId) {
+        Goal goal = getGoalById(goalId);
+        User user = validateAndGetUser(userId);
+        goal.getStarredBy().add(user);
+        goalRepository.save(goal);
+    }
+
+    public void removeStar(Long goalId, Long userId) {
+        Goal goal = getGoalById(goalId);
+        User user = validateAndGetUser(userId);
+        goal.getStarredBy().remove(user);
+        goalRepository.save(goal);
+    }
+
+    public List<Goal> findGoalsByCategory(String category) {
+        if (category == null) {
+            throw new IllegalArgumentException("category must not be null");
+        }
+        return goalRepository.findByCategory(category);
+    }
+
+    public List<Goal> findGoalsByType(GoalType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("type must not be null");
+        }
+        return goalRepository.findByType(type);
+    }
+
+    public List<Goal> findGoalsByHost(Long hostId) {
+        if (hostId == null) {
+            throw new IllegalArgumentException("hostId must not be null");
+        }
+        Optional<User> optHost = userRepository.findById(hostId);
+        if (optHost.isEmpty()) {
+            throw new IllegalArgumentException("hostId must be valid");
+        }
+        return goalRepository.findByHost(optHost.get());
+    }
+
+    public List<Goal> findGoalsByMember(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId must not be null");
+        }
+        Optional<User> optUser = userRepository.findById(userId);
+        if (optUser.isEmpty()) {
+            throw new IllegalArgumentException("userId must be valid");
+        }
+        return goalRepository.findByMembersContaining(optUser.get());
     }
 }
