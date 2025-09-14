@@ -28,7 +28,7 @@ public class Goal {
 
     @Column(name = "due_date")
     private LocalDateTime dueDate;
-
+    //catgpry should be enum
     @Column(name = "category")
     private String category;
 
@@ -56,6 +56,7 @@ public class Goal {
             joinColumns = @JoinColumn(name = "goal_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+
     private Set<User> members = new HashSet<>();
 
     @ManyToMany
