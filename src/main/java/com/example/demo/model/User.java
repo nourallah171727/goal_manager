@@ -27,6 +27,27 @@ public class User {
     private String username;
     @Column(name="email")
     private String email;
+    @Column(name="password")
+    private String password;
+    @ElementCollection(targetClass = GoalCategory.class)
+    @CollectionTable(
+            name = "user_categories",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Enumerated(EnumType.STRING) // store enum name instead of ordinal
+    @Column(name = "category")
+    private Set<GoalCategory> categories = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "follows",                                     // join table
+            joinColumns = @JoinColumn(name = "follower_id"),      // this user
+            inverseJoinColumns = @JoinColumn(name = "followee_id") // the one being followed
+    )
+    private Set<User> following = new HashSet<>();
+
+    // Users that follow this user
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Goal>goals;
