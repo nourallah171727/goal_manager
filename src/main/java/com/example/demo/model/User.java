@@ -49,7 +49,7 @@ public class User {
     @ManyToMany(mappedBy = "following")
     private Set<User> followers = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    @ManyToMany(mappedBy = "members")
     private Set<Goal>goals;
 
     public User() {
