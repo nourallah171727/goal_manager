@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.DTOMapper;
 import com.example.demo.dto.UserCreateDTO;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.dto.UserUpdateDTO;
@@ -18,18 +19,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserResource {
-    private UserService userService;
+    private final UserService userService;
+    private final DTOMapper dtoMapper;
 
     @Autowired
-    public UserResource(UserService userService) {
+    public UserResource(UserService userService, DTOMapper dtoMapper) {
         this.userService = userService;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping("/{userId}") //tested
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable("userId") Long userId) {
         try {
-            UserResponseDTO userResponseDTO = userService.getUserById(userId);
-            return ResponseEntity.ok(userResponseDTO);
+            User user = userService.getUserById(userId);
+            return ResponseEntity.ok(dtoMapper.userToResponseDTO(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -37,22 +40,30 @@ public class UserResource {
 
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() { //tested
-        return ResponseEntity.ok(userService.getUsers());
+        List<UserResponseDTO> result = userService.getUsers().stream()
+                .map(dtoMapper::userToResponseDTO)
+                .toList();
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO user) { //tested
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO userDto) { //tested
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
+            User userEntity = dtoMapper.createDtoToUser(userDto);
+            User saved = userService.createUser(userEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(dtoMapper.userToResponseDTO(saved));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateDTO userDetails) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable("id") Long id,
+                                                      @Valid @RequestBody UserUpdateDTO userDto) {
         try {
-            return ResponseEntity.ok(userService.updateUser(id, userDetails));
+            User userEntity = dtoMapper.updateDtoToUser(userDto);
+            User updated = userService.updateUser(id, userEntity);
+            return ResponseEntity.ok(dtoMapper.userToResponseDTO(updated));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

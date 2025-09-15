@@ -1,59 +1,73 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.DTOMapper;
 import com.example.demo.dto.UserCreateDTO;
-import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.dto.UserUpdateDTO;
+import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserResource.class)
-public class UserResourceTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
+@Import(DTOMapper.class)
+class UserResourceTest {
 
     @Autowired
     private MockMvc httpSimulator;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockitoBean
-    private UserService service;
+    private UserService userService;
+
+    @MockitoSpyBean
+    private DTOMapper dtoMapper;
 
     // --- create user ---
     @Test
-    void testCreateUserSuccessful() throws Exception {
-        UserCreateDTO createDTO = new UserCreateDTO("Abderrahmen Firas Ben Hmidene", "thisisanemail@yahoo.de");
-        UserResponseDTO responseDTO = new UserResponseDTO("Abderrahmen Firas Ben Hmidene", "thisisanemail@yahoo.de");
+    void testCreateUserSuccess() throws Exception {
+        UserCreateDTO createDTO = new UserCreateDTO("Alice", "alice@mail.com");
+        User userEntity = new User("Alice", "alice@mail.com");
+        userEntity.setId(1L);
 
-        when(service.createUser(any(UserCreateDTO.class))).thenReturn(responseDTO);
+        when(userService.createUser(any(User.class))).thenReturn(userEntity);
 
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("Abderrahmen Firas Ben Hmidene"))
-                .andExpect(jsonPath("$.email").value("thisisanemail@yahoo.de"));
+                .andExpect(jsonPath("$.username").value("Alice"))
+                .andExpect(jsonPath("$.email").value("alice@mail.com"));
 
-        verify(service).createUser(any(UserCreateDTO.class));
+        verify(userService).createUser(any(User.class));
     }
 
     @Test
     void testCreateUserFail() throws Exception {
-        UserCreateDTO createDTO = new UserCreateDTO("badName", "badMail");
-        when(service.createUser(any(UserCreateDTO.class))).thenThrow(new IllegalArgumentException("wrong email"));
+        UserCreateDTO createDTO = new UserCreateDTO("bad", "bad");
+
+        when(userService.createUser(any(User.class)))
+                .thenThrow(new IllegalArgumentException("wrong email"));
 
         httpSimulator.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -64,35 +78,36 @@ public class UserResourceTest {
     // --- get user ---
     @Test
     void testGetUserSuccess() throws Exception {
-        UserResponseDTO responseDTO = new UserResponseDTO("Firas", "mail@gmail.com");
-        when(service.getUserById(123L)).thenReturn(responseDTO);
+        User userEntity = new User("Bob", "bob@mail.com");
+        userEntity.setId(123L);
+
+        when(userService.getUserById(123L)).thenReturn(userEntity);
 
         httpSimulator.perform(get("/user/123"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("Firas"))
-                .andExpect(jsonPath("$.email").value("mail@gmail.com"));
+                .andExpect(jsonPath("$.username").value("Bob"))
+                .andExpect(jsonPath("$.email").value("bob@mail.com"));
 
-        verify(service).getUserById(123L);
+        verify(userService).getUserById(123L);
     }
 
     @Test
     void testGetUserFail() throws Exception {
-        when(service.getUserById(999L)).thenThrow(new IllegalArgumentException("no user with such id"));
+        when(userService.getUserById(999L))
+                .thenThrow(new IllegalArgumentException("not found"));
 
         httpSimulator.perform(get("/user/999"))
                 .andExpect(status().isBadRequest());
-
-        verify(service).getUserById(999L);
     }
 
     // --- get all users ---
     @Test
     void testGetAllUsersSuccess() throws Exception {
-        List<UserResponseDTO> list = new LinkedList<>();
-        list.add(new UserResponseDTO("u1", "u1@mail.com"));
-        list.add(new UserResponseDTO("u2", "u2@mail.com"));
+        User u1 = new User("u1", "u1@mail.com");
+        User u2 = new User("u2", "u2@mail.com");
+        List<User> users = List.of(u1, u2);
 
-        when(service.getUsers()).thenReturn(list);
+        when(userService.getUsers()).thenReturn(users);
 
         httpSimulator.perform(get("/user/all"))
                 .andExpect(status().isOk())
@@ -102,16 +117,17 @@ public class UserResourceTest {
                 .andExpect(jsonPath("$[1].username").value("u2"))
                 .andExpect(jsonPath("$[1].email").value("u2@mail.com"));
 
-        verify(service).getUsers();
+        verify(userService).getUsers();
     }
 
     // --- update user ---
     @Test
     void testUpdateUserSuccess() throws Exception {
         UserUpdateDTO updateDTO = new UserUpdateDTO("Updated", "updated@mail.com");
-        UserResponseDTO responseDTO = new UserResponseDTO("Updated", "updated@mail.com");
+        User userEntity = new User("Updated", "updated@mail.com");
+        userEntity.setId(42L);
 
-        when(service.updateUser(eq(42L), any(UserUpdateDTO.class))).thenReturn(responseDTO);
+        when(userService.updateUser(eq(42L), any(User.class))).thenReturn(userEntity);
 
         httpSimulator.perform(put("/user/42")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -120,13 +136,14 @@ public class UserResourceTest {
                 .andExpect(jsonPath("$.username").value("Updated"))
                 .andExpect(jsonPath("$.email").value("updated@mail.com"));
 
-        verify(service).updateUser(eq(42L), any(UserUpdateDTO.class));
+        verify(userService).updateUser(eq(42L), any(User.class));
     }
 
     @Test
     void testUpdateUserFail() throws Exception {
         UserUpdateDTO updateDTO = new UserUpdateDTO("bad", "bad");
-        when(service.updateUser(eq(42L), any(UserUpdateDTO.class)))
+
+        when(userService.updateUser(eq(42L), any(User.class)))
                 .thenThrow(new IllegalArgumentException("user not found"));
 
         httpSimulator.perform(put("/user/42")
@@ -138,21 +155,22 @@ public class UserResourceTest {
     // --- delete user ---
     @Test
     void testDeleteUserSuccess() throws Exception {
-        doNothing().when(service).deleteById(42L);
+        doNothing().when(userService).deleteById(42L);
 
         httpSimulator.perform(delete("/user/42"))
                 .andExpect(status().isNoContent());
 
-        verify(service).deleteById(42L);
+        verify(userService).deleteById(42L);
     }
 
     @Test
     void testDeleteUserFail() throws Exception {
-        doThrow(new IllegalArgumentException("user not found")).when(service).deleteById(42L);
+        doThrow(new IllegalArgumentException("user not found"))
+                .when(userService).deleteById(42L);
 
         httpSimulator.perform(delete("/user/42"))
                 .andExpect(status().isBadRequest());
 
-        verify(service).deleteById(42L);
+        verify(userService).deleteById(42L);
     }
 }
