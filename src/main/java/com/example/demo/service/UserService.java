@@ -60,4 +60,11 @@ public class UserService {
         }
         repository.deleteById(id);
     }
+    public void follow(Long followerId,Long followeeId){
+
+
+    }
+    public void unfollow(User user){
+
+    }
 }
