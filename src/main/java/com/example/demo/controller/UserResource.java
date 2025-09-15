@@ -78,4 +78,27 @@ public class UserResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    @PostMapping("/{followerId}/follow/{followeeId}")
+    public ResponseEntity<Void> follow(
+            @PathVariable Long followerId,
+            @PathVariable Long followeeId) {
+        try {
+            userService.follow(followerId, followeeId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{followerId}/unfollow/{followeeId}")
+    public ResponseEntity<Void> unfollow(
+            @PathVariable Long followerId,
+            @PathVariable Long followeeId) {
+        try {
+            userService.unfollow(followerId, followeeId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

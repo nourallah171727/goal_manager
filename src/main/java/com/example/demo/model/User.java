@@ -52,6 +52,38 @@ public class User {
     @ManyToMany(mappedBy = "members")
     private Set<Goal>goals;
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<GoalCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<GoalCategory> categories) {
+        this.categories = categories;
+    }
+
+    public Set<User> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(Set<User> following) {
+        this.following = following;
+    }
+
+    public Set<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Set<User> followers) {
+        this.followers = followers;
+    }
+
     public User() {
     }
 

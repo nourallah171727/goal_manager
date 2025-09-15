@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -58,10 +59,31 @@ public class UserService {
     }
 
     public void follow(Long followerId, Long followeeId) {
-        // TODO: implement follow logic with entities
+        Optional<User>follower=repository.findById(followerId);
+        Optional<User>followee=repository.findById(followeeId);
+        if(followee.isEmpty() || follower.isEmpty()){
+            throw new IllegalArgumentException("either follower or followeee doesn't exist");
+        }
+        if(follower.get().getId().equals(followee.get().getId())){
+            throw new IllegalArgumentException("can't follow yourself");
+        }
+        follower.get().getFollowing().add(followee.get());
+        followee.get().getFollowers().add(follower.get());
+        repository.save(follower.get());
     }
 
-    public void unfollow(User user) {
+    public void unfollow(Long followerId, Long followeeId) {
         // TODO: implement unfollow logic with entities
+        Optional<User>follower=repository.findById(followerId);
+        Optional<User>followee=repository.findById(followeeId);
+        if(followee.isEmpty() || follower.isEmpty()){
+            throw new IllegalArgumentException("either follower or followeee doesn't exist");
+        }
+        if(follower.get().getId().equals(followee.get().getId())){
+            throw new IllegalArgumentException("can't unfollow yourself");
+        }
+        follower.get().getFollowing().remove(followee.get());
+        followee.get().getFollowers().remove(follower.get());
+        repository.save(follower.get());
     }
 }
