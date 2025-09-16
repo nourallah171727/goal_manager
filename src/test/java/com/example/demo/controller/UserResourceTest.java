@@ -45,7 +45,7 @@ class UserResourceTest {
     // --- create user ---
     @Test
     void testCreateUserSuccess() throws Exception {
-        UserCreateDTO createDTO = new UserCreateDTO("Alice", "alice@mail.com");
+        UserCreateDTO createDTO = new UserCreateDTO("Alice", "alice@mail.com","somepassword");
         User userEntity = new User("Alice", "alice@mail.com");
         userEntity.setId(1L);
 
@@ -63,7 +63,7 @@ class UserResourceTest {
 
     @Test
     void testCreateUserFail() throws Exception {
-        UserCreateDTO createDTO = new UserCreateDTO("bad", "bad");
+        UserCreateDTO createDTO = new UserCreateDTO("bad", "bad","a");
 
         when(userService.createUser(any(User.class)))
                 .thenThrow(new IllegalArgumentException("wrong email"));

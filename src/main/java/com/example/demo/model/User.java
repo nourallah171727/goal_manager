@@ -90,6 +90,7 @@ public class User {
     public void setFollowers(Set<User> followers) {
         this.followers = followers;
     }
+    public User(){}
     public User(String username,String email){
         this.username=username;
         this.email=email;

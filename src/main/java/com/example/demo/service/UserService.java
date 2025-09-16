@@ -34,8 +34,6 @@ public class UserService {
         if (repository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("email already used");
         }
-        String encoded = passwordEncoder.encode(user.getEncodedPassword());
-        user.setEncodedPassword(encoded);
         return repository.save(user);
     }
 
