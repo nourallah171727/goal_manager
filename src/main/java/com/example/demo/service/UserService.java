@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,12 +12,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository repository;
-
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public UserService(UserRepository repository) {
-        this.repository = repository;
+    public UserService(UserRepository repo, PasswordEncoder encoder) {
+        this.repository = repo;
+        this.passwordEncoder = encoder;
     }
-
     public User getUserById(Long userId) {
         return repository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("no user with such ID"));
@@ -33,6 +34,8 @@ public class UserService {
         if (repository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("email already used");
         }
+        String encoded = passwordEncoder.encode(user.getEncodedPassword());
+        user.setEncodedPassword(encoded);
         return repository.save(user);
     }
 

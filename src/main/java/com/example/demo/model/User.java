@@ -1,10 +1,6 @@
 package com.example.demo.model;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,8 +23,18 @@ public class User {
     private String username;
     @Column(name="email")
     private String email;
-    @Column(name="password")
-    private String password;
+    @Column(name="encodedPassword")
+    private String encodedPassword;
+    private String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @ElementCollection(targetClass = GoalCategory.class)
     @CollectionTable(
             name = "user_categories",
@@ -52,12 +58,12 @@ public class User {
     @ManyToMany(mappedBy = "members")
     private Set<Goal>goals;
 
-    public String getPassword() {
-        return password;
+    public String getEncodedPassword() {
+        return encodedPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEncodedPassword(String encodedPassword) {
+        this.encodedPassword = encodedPassword;
     }
 
     public Set<GoalCategory> getCategories() {

@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserResource {
+
     private final UserService userService;
     private final DTOMapper dtoMapper;
 
@@ -28,18 +29,14 @@ public class UserResource {
         this.dtoMapper = dtoMapper;
     }
 
-    @GetMapping("/{userId}") //tested
+    @GetMapping("/{userId}") // tested
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable("userId") Long userId) {
-        try {
-            User user = userService.getUserById(userId);
-            return ResponseEntity.ok(dtoMapper.userToResponseDTO(user));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(dtoMapper.userToResponseDTO(user));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() { //tested
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() { // tested
         List<UserResponseDTO> result = userService.getUsers().stream()
                 .map(dtoMapper::userToResponseDTO)
                 .toList();
@@ -47,58 +44,37 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO userDto) { //tested
-        try {
-            User userEntity = dtoMapper.createDtoToUser(userDto);
-            User saved = userService.createUser(userEntity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(dtoMapper.userToResponseDTO(saved));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO userDto) { // tested
+        User userEntity = dtoMapper.createDtoToUser(userDto);
+        User saved = userService.createUser(userEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dtoMapper.userToResponseDTO(saved));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable("id") Long id,
                                                       @Valid @RequestBody UserUpdateDTO userDto) {
-        try {
-            User userEntity = dtoMapper.updateDtoToUser(userDto);
-            User updated = userService.updateUser(id, userEntity);
-            return ResponseEntity.ok(dtoMapper.userToResponseDTO(updated));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        User userEntity = dtoMapper.updateDtoToUser(userDto);
+        User updated = userService.updateUser(id, userEntity);
+        return ResponseEntity.ok(dtoMapper.userToResponseDTO(updated));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-        try {
-            userService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        userService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/{followerId}/follow/{followeeId}")
-    public ResponseEntity<Void> follow(
-            @PathVariable Long followerId,
-            @PathVariable Long followeeId) {
-        try {
-            userService.follow(followerId, followeeId);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> follow(@PathVariable Long followerId,
+                                       @PathVariable Long followeeId) {
+        userService.follow(followerId, followeeId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{followerId}/unfollow/{followeeId}")
-    public ResponseEntity<Void> unfollow(
-            @PathVariable Long followerId,
-            @PathVariable Long followeeId) {
-        try {
-            userService.unfollow(followerId, followeeId);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> unfollow(@PathVariable Long followerId,
+                                         @PathVariable Long followeeId) {
+        userService.unfollow(followerId, followeeId);
+        return ResponseEntity.noContent().build();
     }
 }
