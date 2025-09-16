@@ -93,9 +93,10 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email) {
+    public User(String username, String email,String encodedPassword) {
         this.username = username;
         this.email = email;
+        this.encodedPassword=encodedPassword;
     }
 
     public Long getId() {
