@@ -25,6 +25,7 @@ public class User {
     private String email;
     @Column(name="encodedPassword")
     private String encodedPassword;
+    @Column(name="role")
     private String role;
 
     public String getRole() {
