@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.service.TaskService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,9 +13,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final CustomUserDetailsService userDetailsService;
+    private final TaskService.CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(TaskService.CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 

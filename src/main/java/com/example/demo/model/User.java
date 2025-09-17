@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@EntityListeners(UserEntityListener.class)
 @Table(name = "users")
 public class User {
     @Id
@@ -23,8 +24,8 @@ public class User {
     private String username;
     @Column(name="email")
     private String email;
-    @Column(name="encodedPassword")
-    private String encodedPassword;
+    @Column(name="password")
+    private String password;
     @Column(name="role")
     private String role;
 
@@ -59,12 +60,12 @@ public class User {
     @ManyToMany(mappedBy = "members")
     private Set<Goal>goals;
 
-    public String getEncodedPassword() {
-        return encodedPassword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setEncodedPassword(String encodedPassword) {
-        this.encodedPassword = encodedPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<GoalCategory> getCategories() {
@@ -96,10 +97,10 @@ public class User {
         this.email=email;
     }
 
-    public User(String username, String email,String encodedPassword) {
+    public User(String username, String email,String password) {
         this.username = username;
         this.email = email;
-        this.encodedPassword=encodedPassword;
+        this.password=password;
     }
 
     public Long getId() {

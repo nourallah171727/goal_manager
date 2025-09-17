@@ -13,8 +13,6 @@ import java.util.Set;
 @Entity
 @Table(name = "goals")
 public class Goal {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "goal_id")

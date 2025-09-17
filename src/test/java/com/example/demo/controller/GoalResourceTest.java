@@ -27,7 +27,8 @@ class GoalResourceTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean private GoalService goalService;
+    @MockitoBean
+    private GoalService goalService;
 
     @Autowired
     private ObjectMapper objectMapper;
