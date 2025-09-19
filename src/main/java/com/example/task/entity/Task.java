@@ -1,4 +1,6 @@
-package com.example.model;
+package com.example.task.entity;
+import com.example.goal.entity.Goal;
+import com.example.task.common.TaskStatus;
 import jakarta.persistence.*;
 
 import java.util.Objects;

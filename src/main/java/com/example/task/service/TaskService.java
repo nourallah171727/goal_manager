@@ -1,8 +1,8 @@
 package com.example.task.service;
-import com.example.model.Goal;
-import com.example.model.Task;
-import com.example.model.TaskStatus;
-import com.example.model.User;
+import com.example.goal.entity.Goal;
+import com.example.task.entity.Task;
+import com.example.task.common.TaskStatus;
+import com.example.user.entity.User;
 import com.example.task.repo.TaskRepository;
 import com.example.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

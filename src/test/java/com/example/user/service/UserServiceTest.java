@@ -1,5 +1,5 @@
 package com.example.user.service;
-import com.example.model.User;
+import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

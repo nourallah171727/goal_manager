@@ -1,7 +1,7 @@
 package com.example.goal.controller;
 
-import com.example.model.Goal;
-import com.example.model.User;
+import com.example.goal.entity.Goal;
+import com.example.user.entity.User;
 import com.example.goal.service.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

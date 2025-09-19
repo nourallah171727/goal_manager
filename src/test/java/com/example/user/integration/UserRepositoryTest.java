@@ -1,6 +1,6 @@
 package com.example.user.integration;
 
-import com.example.model.User;
+import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

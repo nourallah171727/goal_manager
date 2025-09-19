@@ -1,8 +1,8 @@
 package com.example.goal.repo;
 
-import com.example.model.Goal;
-import com.example.model.GoalStand;
-import com.example.model.User;
+import com.example.goal.entity.Goal;
+import com.example.goal.common.GoalStand;
+import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

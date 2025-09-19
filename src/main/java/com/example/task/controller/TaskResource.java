@@ -1,6 +1,6 @@
 package com.example.task.controller;
-import com.example.model.Goal;
-import com.example.model.Task;
+import com.example.goal.entity.Goal;
+import com.example.task.entity.Task;
 import com.example.task.service.TaskService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -1,9 +1,9 @@
 package com.example.goal.repo;
 
 
-import com.example.model.Goal;
-import com.example.model.GoalType;
-import com.example.model.User;
+import com.example.goal.entity.Goal;
+import com.example.goal.common.GoalType;
+import com.example.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

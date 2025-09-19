@@ -1,7 +1,7 @@
 package com.example.goal.controller;
 
-import com.example.model.Goal;
-import com.example.model.GoalType;
+import com.example.goal.entity.Goal;
+import com.example.goal.common.GoalType;
 import com.example.goal.service.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

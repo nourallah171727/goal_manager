@@ -1,4 +1,4 @@
-package com.example.ranking.common;
+package com.example.ranking;
 
 
 import java.util.List;

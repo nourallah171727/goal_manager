@@ -4,7 +4,7 @@ import com.example.user.dto.DTOMapper;
 import com.example.user.dto.UserCreateDTO;
 import com.example.user.dto.UserResponseDTO;
 import com.example.user.dto.UserUpdateDTO;
-import com.example.model.User;
+import com.example.user.entity.User;
 import com.example.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

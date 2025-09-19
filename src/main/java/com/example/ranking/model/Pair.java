@@ -1,4 +1,4 @@
-package com.example.ranking.common;
+package com.example.ranking.model;
 
 public abstract class Pair<A,B> {
     private A a;

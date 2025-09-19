@@ -1,7 +1,8 @@
-package com.example.ranking.userPerGoal;
+package com.example.ranking.service;
 
-import com.example.model.Goal;
-import com.example.ranking.common.Ranking;
+import com.example.goal.entity.Goal;
+import com.example.ranking.Ranking;
+import com.example.ranking.model.UserScorePair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,16 +36,16 @@ public class RankingOfUsersPerGoal implements Ranking<UserScorePair,Long> {
             UserScorePair pair=priorityQueue.poll();
             Objects.requireNonNull(pair);
             list.add(pair);
-            map.remove(pair.getA().getId(),pair);
+            map.remove(pair.getUser().getId(),pair);
 
         }
         return list;
     }
     //O(log(n))
     public void add(UserScorePair toAdd){
-        Long userId=toAdd.getA().getId();
+        Long userId=toAdd.getUser().getId();
         priorityQueue.add(toAdd);
-        map.put(toAdd.getA().getId(),toAdd);
+        map.put(toAdd.getUser().getId(),toAdd);
     }
     //O(n)
     public void update(Long userId,UserScorePair newElement){

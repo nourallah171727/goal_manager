@@ -3,7 +3,7 @@ package com.example.user.controller;
 import com.example.user.dto.DTOMapper;
 import com.example.user.dto.UserCreateDTO;
 import com.example.user.dto.UserUpdateDTO;
-import com.example.model.User;
+import com.example.user.entity.User;
 import com.example.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

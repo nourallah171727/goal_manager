@@ -1,6 +1,6 @@
-package com.example.ranking.userPerGoal;
+package com.example.ranking.service;
 
-import com.example.model.Goal;
+import com.example.goal.entity.Goal;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GoalLeaderBoardManager {
     //stores goal_id -> its ranking data structure based on number of its members
 
-    private ConcurrentHashMap<Long,RankingOfUsersPerGoal> cache=new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, RankingOfUsersPerGoal> cache=new ConcurrentHashMap<>();
     public Optional<RankingOfUsersPerGoal> getRanking(Goal goal){
         Objects.requireNonNull(goal);
         //only use data structure for big goals , otherwise , too much memory!

@@ -1,8 +1,8 @@
 
 package com.example.task.repo;
 
-import com.example.model.Goal;
-import com.example.model.Task;
+import com.example.goal.entity.Goal;
+import com.example.task.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

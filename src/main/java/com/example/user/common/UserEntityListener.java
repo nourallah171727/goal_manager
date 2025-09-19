@@ -1,5 +1,6 @@
-package com.example.model;
+package com.example.user.common;
 
+import com.example.user.entity.User;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

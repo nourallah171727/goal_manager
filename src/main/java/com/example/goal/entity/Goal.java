@@ -1,5 +1,9 @@
-package com.example.model;
+package com.example.goal.entity;
 
+import com.example.goal.common.GoalStand;
+import com.example.goal.common.GoalType;
+import com.example.task.entity.Task;
+import com.example.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -38,6 +42,16 @@ public class Goal {
 
     @Column(name = "votes_to_mark_completed")
     private int votesToMarkCompleted = 1;
+    @Column(name="totalgoalpoints")
+    private int totalPoints;
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
 
     @ManyToOne
     @JoinColumn(name = "goal_host")

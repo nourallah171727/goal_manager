@@ -1,7 +1,7 @@
 package com.example.goal.service;
 
-import com.example.model.Goal;
-import com.example.model.User;
+import com.example.goal.entity.Goal;
+import com.example.user.entity.User;
 import com.example.goal.repo.GoalRepository;
 import com.example.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeAll;

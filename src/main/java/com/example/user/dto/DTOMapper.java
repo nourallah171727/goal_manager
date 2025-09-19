@@ -1,6 +1,6 @@
 package com.example.user.dto;
 
-import com.example.model.User;
+import com.example.user.entity.User;
 import org.springframework.stereotype.Component;
 @Component
 public class DTOMapper {

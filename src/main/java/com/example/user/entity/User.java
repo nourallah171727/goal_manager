@@ -1,4 +1,7 @@
-package com.example.model;
+package com.example.user.entity;
+import com.example.goal.common.GoalCategory;
+import com.example.goal.entity.Goal;
+import com.example.user.common.UserEntityListener;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
