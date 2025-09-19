@@ -26,7 +26,6 @@ public class RankingOfUsersPerGoal implements Ranking<UserScorePair,Long> {
         //need priorityQueue to be a max heap , cuz per default it is a min heap
         priorityQueue=new PriorityBlockingQueue<>(goal.getMembers().size(),Comparator.reverseOrder());
         map=new ConcurrentHashMap<>();
-
     }
     //O(k log(n)) for small k -> O(log(n))
     public List<UserScorePair> topK(int k){
