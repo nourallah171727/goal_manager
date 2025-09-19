@@ -29,6 +29,7 @@ public class User {
     @Column(name="role")
     private String role;
 
+
     public String getRole() {
         return role;
     }
@@ -59,6 +60,17 @@ public class User {
 
     @ManyToMany(mappedBy = "members")
     private Set<Goal>goals;
+
+    public Set<Goal> getHostedGoals() {
+        return hostedGoals;
+    }
+
+    public void setHostedGoals(Set<Goal> hostedGoals) {
+        this.hostedGoals = hostedGoals;
+    }
+
+    @OneToMany(mappedBy = "host")
+    private Set<Goal> hostedGoals = new HashSet<>();
 
     public String getPassword() {
         return password;
