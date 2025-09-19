@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
+//all of what this does is  storing goals with their ranking data structure for goals with >=1000 members
+//an empty optional means the goal parameter has <1000 members , and hence the calling service
+//would use a naive database query instead
 @Service
 public class GoalLeaderBoardManager {
     //stores goal_id -> its ranking data structure based on number of its members
-    ConcurrentHashMap<Long,RankingOfUsersPerGoal> cache=new ConcurrentHashMap<>();
+
+    private ConcurrentHashMap<Long,RankingOfUsersPerGoal> cache=new ConcurrentHashMap<>();
     public Optional<RankingOfUsersPerGoal> getRanking(Goal goal){
         Objects.requireNonNull(goal);
         //only use data structure for big goals , otherwise , too much memory!
