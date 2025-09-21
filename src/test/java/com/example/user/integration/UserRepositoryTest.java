@@ -23,7 +23,7 @@ class UserRepositoryTest {
 
     @Test
     void testSaveAndFindUser() {
-        User user = new User("alice", "alice@example.com");
+        User user = new User("alice", "alice@example.com","some password");
         userRepository.save(user);
         entityManager.flush();
         entityManager.clear();

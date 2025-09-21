@@ -3,7 +3,9 @@ package com.example.user.service;
 import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +14,9 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public UserService(UserRepository repo, PasswordEncoder encoder) {
+    public UserService(UserRepository repo) {
         this.repository = repo;
-        this.passwordEncoder = encoder;
     }
     public User getUserById(Long userId) {
         return repository.findById(userId)
@@ -26,33 +26,54 @@ public class UserService {
     public List<User> getUsers() {
         return repository.findAll();
     }
-
-    public User createUser(User user) {
+    public void validateUniqueEmailAndUsrName(User user){
         if (repository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("name already used");
         }
         if (repository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("email already used");
         }
+    }
+
+
+    public User createUser(User user) {
+       validateUniqueEmailAndUsrName(user);
         return repository.save(user);
     }
 
     public User updateUser(Long id, User user) {
+        //check if the sender of update request is actually the same user , or a random admin
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = auth.getName();
+        User currentUser = repository.findByUsername(loggedInUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!currentUser.getId().equals(id) && !isAdmin) {
+            throw new AccessDeniedException("You cannot update this user");
+        }
+        //other checks
         if (repository.findById(id).isEmpty()) {
             throw new IllegalArgumentException("user should already be in db");
         }
-        if (repository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("name already exists");
-        }
-        if (repository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("email already exists");
-        }
-
+        validateUniqueEmailAndUsrName(user);
+        //for actual update
         user.setId(id);
         return repository.save(user);
     }
 
     public void deleteById(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = auth.getName();
+        User currentUser = repository.findByUsername(loggedInUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        if (!currentUser.getId().equals(id) ) {
+            throw new AccessDeniedException("You cannot delete this user");
+        }
         if (repository.findById(id).isEmpty()) {
             throw new IllegalArgumentException("user must already be in the db");
         }
@@ -60,6 +81,15 @@ public class UserService {
     }
 
     public void follow(Long followerId, Long followeeId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = auth.getName();
+        User currentUser = repository.findByUsername(loggedInUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        if (!currentUser.getId().equals(followerId) ) {
+            throw new AccessDeniedException("You cannot delete this user");
+        }
         Optional<User>follower=repository.findById(followerId);
         Optional<User>followee=repository.findById(followeeId);
         if(followee.isEmpty() || follower.isEmpty()){
@@ -75,6 +105,15 @@ public class UserService {
 
     public void unfollow(Long followerId, Long followeeId) {
         // TODO: implement unfollow logic with entities
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = auth.getName();
+        User currentUser = repository.findByUsername(loggedInUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        if (!currentUser.getId().equals(followerId) ) {
+            throw new AccessDeniedException("You cannot delete this user");
+        }
         Optional<User>follower=repository.findById(followerId);
         Optional<User>followee=repository.findById(followeeId);
         if(followee.isEmpty() || follower.isEmpty()){
