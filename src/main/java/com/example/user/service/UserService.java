@@ -26,6 +26,7 @@ public class UserService {
     public List<User> getUsers() {
         return repository.findAll();
     }
+
     public void validateUniqueEmailAndUsrName(User user){
         if (repository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("name already used");
@@ -37,7 +38,7 @@ public class UserService {
 
 
     public User createUser(User user) {
-       validateUniqueEmailAndUsrName(user);
+        validateUniqueEmailAndUsrName(user);
         return repository.save(user);
     }
 
@@ -70,8 +71,10 @@ public class UserService {
         User currentUser = repository.findByUsername(loggedInUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        if (!currentUser.getId().equals(id) ) {
+        if (!currentUser.getId().equals(id) && !isAdmin ) {
             throw new AccessDeniedException("You cannot delete this user");
         }
         if (repository.findById(id).isEmpty()) {

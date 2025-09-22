@@ -23,32 +23,41 @@ class UserRepositoryTest {
 
     @Test
     void testSaveAndFindUser() {
-        User user = new User("alice", "alice@example.com","some password");
+        String rawPassword="some password";
+        User user = new User("alice", "alice@example.com",rawPassword);
+        user.setRole("USER");
         userRepository.save(user);
         entityManager.flush();
         entityManager.clear();
         Optional<User> found = userRepository.findById(user.getId());
-
         Assertions.assertTrue(found.isPresent());
-        Assertions.assertEquals(found.get(),user);
+        Assertions.assertNotEquals(rawPassword,found.get().getPassword());
+        Assertions.assertEquals(found.get().getUsername(),user.getUsername());
+        Assertions.assertEquals(found.get().getId(),user.getId());
+
     }
     @Test
     void testUpdateUser(){
-        User user=new User("firas ben hmiden","firasBenHmiden@gmail.com");
+        User user=new User("firas ben hmiden","firasBenHmiden@gmail.com","some password");
+        user.setRole("USER");
         userRepository.save(user);
         entityManager.flush();
         entityManager.clear();
-        user.setEmail("anothermail@gmail.com");
+        String hashedPass=user.getPassword();
+        user.setPassword("some other password");
         userRepository.save(user);
         entityManager.flush();
         entityManager.clear();
         Optional<User> found=userRepository.findById(user.getId());
         Assertions.assertTrue(found.isPresent());
         Assertions.assertEquals(found.get(),user);
+        Assertions.assertNotEquals(found.get().getPassword(),"some other password");
+        Assertions.assertNotEquals(hashedPass,found.get().getPassword());
     }
     @Test
     void testDeleteUser(){
-        User user =new User("nourallah","nourallah@gmail.com");
+        User user =new User("nourallah","nourallah@gmail.com","some password");
+        user.setRole("USER");
         userRepository.save(user);
         entityManager.flush();
         entityManager.clear();
@@ -58,5 +67,48 @@ class UserRepositoryTest {
         entityManager.flush();
         entityManager.clear();
         Assertions.assertTrue(userRepository.findById(user.getId()).isEmpty());
+    }
+    @Test
+    void followUser(){
+        User follower =new User("nourallah","nourallah@gmail.com","some password");
+        follower.setRole("USER");
+        User followee =new User("anotherNourallah","anotherNourallah@gmail.com","some password");
+        followee.setRole("USER");
+        userRepository.save(follower);
+        userRepository.save(followee);
+        follower.getFollowing().add(followee);
+        userRepository.save(follower);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<User> followerResult=userRepository.findById(follower.getId());
+        Assertions.assertFalse(followerResult.isEmpty());
+        Optional<User> followeeResult=userRepository.findById(followee.getId());
+        Assertions.assertFalse(followeeResult.isEmpty());
+        Assertions.assertTrue(followerResult.get().getFollowing().contains(followeeResult.get()));
+        Assertions.assertTrue(followeeResult.get().getFollowers().contains(followerResult.get()));
+    }
+    @Test
+    void unfollowUser(){
+        User follower =new User("nourallah","nourallah@gmail.com","some password");
+        follower.setRole("USER");
+        User followee =new User("anotherNourallah","anotherNourallah@gmail.com","some password");
+        followee.setRole("USER");
+        userRepository.save(follower);
+        userRepository.save(followee);
+        follower.getFollowing().add(followee);
+        userRepository.save(follower);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<User> followerResult=userRepository.findById(follower.getId());
+        Assertions.assertFalse(followerResult.isEmpty());
+        followerResult.get().getFollowing().clear();
+        userRepository.save(followerResult.get());
+        entityManager.flush();
+        entityManager.clear();
+        Optional<User> newFollowerResult=userRepository.findById(follower.getId());
+        Optional<User> followeeResult=userRepository.findById(followee.getId());
+
+        Assertions.assertTrue(newFollowerResult.get().getFollowing().isEmpty());
+        Assertions.assertTrue(followeeResult.get().getFollowers().isEmpty());
     }
 }

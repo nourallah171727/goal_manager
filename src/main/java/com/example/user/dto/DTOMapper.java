@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DTOMapper {
     public User createDtoToUser(UserCreateDTO createDTO){
-        return new User(createDTO.username(), createDTO.email());
+        User user= new User(createDTO.username(), createDTO.email());
+        user.setRole("USER");
+        return user;
     }
     public User updateDtoToUser(UserUpdateDTO updateDTO){
         return new User(updateDTO.username(), updateDTO.email());

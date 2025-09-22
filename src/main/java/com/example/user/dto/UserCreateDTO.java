@@ -11,5 +11,5 @@ public record UserCreateDTO(
         @Email(message = "must be a valid email")
         String email,
         @NotBlank(message="a password must be given")
-        String rawPassword
+        String password
 ) {}
