@@ -9,5 +9,8 @@ public record UserUpdateDTO(
         String username,
         @NotBlank(message = "email is required")
         @Email(message = "must be a valid email")
-        String email) {
+        String email,
+        @NotBlank(message="a password must be given")
+        String password
+) {
 }

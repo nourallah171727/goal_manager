@@ -124,7 +124,7 @@ class UserResourceTest {
     // --- update user ---
     @Test
     void testUpdateUserSuccess() throws Exception {
-        UserUpdateDTO updateDTO = new UserUpdateDTO("Updated", "updated@mail.com");
+        UserUpdateDTO updateDTO = new UserUpdateDTO("Updated", "updated@mail.com","some password");
         User userEntity = new User("Updated", "updated@mail.com");
         userEntity.setId(42L);
 
@@ -142,7 +142,7 @@ class UserResourceTest {
 
     @Test
     void testUpdateUserFail() throws Exception {
-        UserUpdateDTO updateDTO = new UserUpdateDTO("bad", "bad");
+        UserUpdateDTO updateDTO = new UserUpdateDTO("bad", "bad","some password");
 
         when(userService.updateUser(eq(42L), any(User.class)))
                 .thenThrow(new IllegalArgumentException("user not found"));

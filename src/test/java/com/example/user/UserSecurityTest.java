@@ -10,7 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+// for simplicity reasons , for now , security tests are able to change the database
+//should run everyone separately
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserSecurityTest {
@@ -28,7 +29,7 @@ class UserSecurityTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "bob", roles = "USER")
     void updateUserAllowedIfAuthenticatedWithUserRole() throws Exception {
 
         // First create the user
@@ -38,15 +39,20 @@ class UserSecurityTest {
                 .andExpect(status().isCreated());
 
         // Then update it
-        mockMvc.perform(put("/user/1")
+        mockMvc.perform(put("/user/207")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"bobby\",\"email\":\"bobby@mail.com\"}"))
+                        .content("{\"username\":\"bobby\",\"email\":\"bobby@mail.com\",\"password\":\"pwd\"}"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateUserAllowedIfAuthenticatedWithAdminRole() throws Exception {
+        // First create the user
+        mockMvc.perform(post("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"bob\",\"email\":\"bob@mail.com\",\"password\":\"pwd\"}"))
+                .andExpect(status().isCreated());
         mockMvc.perform(put("/user/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"admin\",\"email\":\"admin@mail.com\"}"))
