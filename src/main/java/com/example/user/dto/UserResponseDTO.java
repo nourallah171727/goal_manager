@@ -1,4 +1,4 @@
 package com.example.user.dto;
 
-public record UserResponseDTO (String username,String email){
+public record UserResponseDTO (Long id,String username,String email){
 }
