@@ -12,10 +12,10 @@ import java.util.List;
 @RequestMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE}, path = "/task")
 public class TaskResource {
     private final TaskService service;
-    //autowired is necessary no?
     public TaskResource(TaskService service) {
         this.service = service;
     }
+    //any user
     @GetMapping("/{taskId}")
     public ResponseEntity<Task> getTask(@PathVariable("taskId") Long taskId){
         try {
@@ -25,6 +25,7 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    //any user
     @GetMapping("/all/{goalId}")
     public ResponseEntity<List<Task>> getAllTasks(@PathVariable("goalId") Long goalId){
         try{
@@ -34,8 +35,7 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
-    //I think we should just have goal_id as path variable !
-    //instead of .ok which has 200 http code , we should use http.created which has status code 204 , used for created
+    //only host or admin
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestParam("name") String name, @RequestBody Goal goal){
         try {
@@ -45,7 +45,7 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
-    //same here , doing logic only for name is too restricted ! I THINK
+    //only host or admin
     @PutMapping("/{taskId}")
     public ResponseEntity<Task> updateTaskName(@PathVariable("taskId") Long taskId, @RequestParam String name){
         try{
@@ -55,6 +55,7 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    //only host or admin
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Long taskId){
         try{

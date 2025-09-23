@@ -1,5 +1,6 @@
 package com.example.task.entity;
 import com.example.goal.entity.Goal;
+import com.example.task.common.TaskDifficulty;
 import com.example.task.common.TaskStatus;
 import jakarta.persistence.*;
 
@@ -29,7 +30,8 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TaskStatus taskStatus;
-    
+    @Column(name="difficulty")
+    TaskDifficulty difficulty;
     @ManyToOne
     @JoinColumn(name = "task_goal", nullable = false)
     private Goal goal;
@@ -64,6 +66,13 @@ public class Task {
 
     public void setGoal(Goal goal) {
         this.goal = goal;
+    }
+    public TaskDifficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(TaskDifficulty difficulty) {
+        this.difficulty = difficulty;
     }
 
     @Override
