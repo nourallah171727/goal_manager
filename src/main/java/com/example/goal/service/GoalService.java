@@ -30,7 +30,7 @@ public class GoalService {
 
     public Goal getGoalById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("goalId is null");
+            throw new IllegalArgumentException("goalId is null") ;
         }
         return goalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("no goal with such ID"));
