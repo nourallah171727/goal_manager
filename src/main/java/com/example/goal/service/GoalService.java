@@ -1,5 +1,6 @@
 package com.example.goal.service;
 
+import com.example.goal.common.GoalStand;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
 import com.example.user.entity.User;
@@ -62,6 +63,10 @@ public class GoalService {
                 Objects.requireNonNull(goal.getPrivateCode(),"private goals should have a password");
             }
         }
+        if(goal.getTasks().isEmpty()){
+            throw new IllegalArgumentException("freshly created goals should at least have one task!");
+        }
+        goal.setGoalStand(GoalStand.PROGRESS);
         return goalRepository.save(goal);
     }
 
