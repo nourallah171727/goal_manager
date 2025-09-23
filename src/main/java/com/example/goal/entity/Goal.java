@@ -114,15 +114,9 @@ public class Goal {
         this.goalStand = goalStand;
     }
 
-    public User getUser() {
-        return host;
-    }
 
-    public void setUser(User user) {
-        this.host = user;
-    }
 
-    public Long getId() {
+       public Long getId() {
         return id;
     }
 

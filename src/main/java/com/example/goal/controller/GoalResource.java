@@ -18,7 +18,7 @@ public class GoalResource {
     public GoalResource(GoalService goalService) {
         this.goalService = goalService;
     }
-
+    //any user
     @GetMapping("/{goalId}")
     public ResponseEntity<Goal> getGoal(@PathVariable("goalId") Long goalId) {
         try {
@@ -28,13 +28,13 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    //any user
     @GetMapping("/all")
     public ResponseEntity<List<Goal>> getAllGoals() {
         return ResponseEntity.ok(goalService.getGoals());
     }
 
-
+    //any user
     @PostMapping("/{userId}")
     public ResponseEntity<Goal> createGoal(@PathVariable("userId") Long userId,
                                            @RequestBody Goal goal) {
@@ -45,6 +45,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    //only host or admin
     @PutMapping("/{id}")
     public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody Goal goalDetails) {
         try {
@@ -53,7 +54,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    //only host or admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGoal(@PathVariable("id") Long id) {
         try {
@@ -63,6 +64,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    //any user if not host and not already joined
     @PostMapping("/{goalId}/join/{userId}")
     public ResponseEntity<Void> joinGoal(@PathVariable Long goalId, @PathVariable Long userId) {
         try {
@@ -72,7 +74,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    //only if already joined in
     @DeleteMapping("/{goalId}/leave/{userId}")
     public ResponseEntity<Void> leaveGoal(@PathVariable Long goalId, @PathVariable Long userId) {
         try {
@@ -82,7 +84,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    // any user
     @PostMapping("/{goalId}/star/{userId}")
     public ResponseEntity<Void> addStar(@PathVariable Long goalId, @PathVariable Long userId) {
         try {
@@ -92,7 +94,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    //any user
     @DeleteMapping("/{goalId}/star/{userId}")
     public ResponseEntity<Void> removeStar(@PathVariable Long goalId, @PathVariable Long userId) {
         try {
@@ -102,6 +104,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    //those I don't need for now
 
     @GetMapping("/category/{category}")
     public ResponseEntity<List<Goal>> findGoalsByCategory(@PathVariable String category) {

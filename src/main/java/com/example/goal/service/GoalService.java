@@ -6,6 +6,9 @@ import com.example.user.entity.User;
 import com.example.goal.repo.GoalRepository;
 import com.example.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +52,8 @@ public class GoalService {
         if (goal.getId() != null) {
             throw new IllegalArgumentException("goal should not already have an ID!");
         }
-        goal.setUser(optUser.get());
+        goal.setHost(optUser.get());
+        goal.getMembers().add(optUser.get());
         return goalRepository.save(goal);
     }
 
@@ -60,21 +64,38 @@ public class GoalService {
         if (goal == null) {
             throw new IllegalArgumentException("goal should not be null");
         }
-        if (goalRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("goal must already be in the db");
-        }
         if(goal.getId()!=null){
             throw new IllegalArgumentException("goal object shall not contain an id , you must update only through path variable");
         }
+        Goal existingGoal = goalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("goal must already be in the db"));
+        User currentUser = getCurrentUser();
+
+        boolean isAdmin = "ROLE_ADMIN".equals(currentUser.getRole());
+        boolean isHost = existingGoal.getHost().getId().equals(currentUser.getId());
+        if (!isAdmin && !isHost) {
+            throw new AccessDeniedException("You are not allowed to update this goal");
+        }
+
+
         goal.setId(id);
 
         return goalRepository.save(goal);
     }
 
     public void deleteById(Long id) {
-        if (id == null || goalRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("goal must already be in the db");
+        Goal goal = goalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("goal must already be in the db"));
+
+        User currentUser = getCurrentUser();
+
+        boolean isAdmin = "ROLE_ADMIN".equals(currentUser.getRole());
+        boolean isHost = goal.getHost().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isHost) {
+            throw new AccessDeniedException("You are not allowed to delete this goal");
         }
+
         goalRepository.deleteById(id);
     }
 
@@ -84,6 +105,16 @@ public class GoalService {
         }
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("userId must be valid"));
+    }
+
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new AccessDeniedException("No authentication found");
+        }
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
     }
     public void joinGoal(Long goalId, Long userId) {
         Goal goal = getGoalById(goalId);
