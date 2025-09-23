@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -54,6 +55,13 @@ public class GoalService {
         }
         goal.setHost(optUser.get());
         goal.getMembers().add(optUser.get());
+        if(goal.getType()!= GoalType.PRIVATE){
+            if(goal.getPrivateCode()!=null){
+                throw new IllegalArgumentException("public goals should have no password");
+            }else{
+                Objects.requireNonNull(goal.getPrivateCode(),"private goals should have a password");
+            }
+        }
         return goalRepository.save(goal);
     }
 

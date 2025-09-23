@@ -1,5 +1,6 @@
 package com.example.goal.entity;
 
+import com.example.goal.common.GoalCategory;
 import com.example.goal.common.GoalStand;
 import com.example.goal.common.GoalType;
 import com.example.task.entity.Task;
@@ -29,9 +30,9 @@ public class Goal {
 
     @Column(name = "due_date")
     private LocalDateTime dueDate;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private String category;
+    private GoalCategory category;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -80,8 +81,6 @@ public class Goal {
 
 
     public Goal() {
-        this.goalStand = GoalStand.NOT_STARTED;
-        this.dueDate = null;
     }
 
     public Goal(String name, User host) {
@@ -132,11 +131,11 @@ public class Goal {
         this.tasks = tasks;
     }
 
-    public String getCategory() {
+    public GoalCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(GoalCategory category) {
         this.category = category;
     }
 

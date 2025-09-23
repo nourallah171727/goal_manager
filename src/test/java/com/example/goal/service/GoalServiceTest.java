@@ -42,9 +42,9 @@ public class GoalServiceTest {
         Goal givenGoal = goalService.getGoalById(123546L);
         assertNotNull(givenGoal);
         assertEquals(goal.getName(), givenGoal.getName());
-        assertNotNull(givenGoal.getUser());
-        assertEquals(goal.getUser().getUsername(), givenGoal.getUser().getUsername());
-        assertEquals(goal.getUser().getEmail(), givenGoal.getUser().getEmail());
+        assertNotNull(givenGoal.getHost());
+        assertEquals(goal.getHost().getUsername(), givenGoal.getHost().getUsername());
+        assertEquals(goal.getHost().getEmail(), givenGoal.getHost().getEmail());
         verify(goalRepository).findById(123546L);
     }
 
@@ -86,12 +86,12 @@ public class GoalServiceTest {
         assertNotNull(goalList2);
         assertTrue(goal.getName().equals(goalList1.getName())^goal.getName().equals(goalList2.getName()));
         assertTrue(goal2.getName().equals(goalList1.getName())^goal2.getName().equals(goalList2.getName()));
-        assertNotNull(goalList1.getUser());
-        assertNotNull(goalList2.getUser());
-        assertTrue(goal.getUser().getUsername().equals(goalList1.getUser().getUsername()) ^ goal.getUser().getUsername().equals(goalList2.getUser().getUsername()));
-        assertTrue(goal.getUser().getEmail().equals(goalList1.getUser().getEmail()) ^ goal.getUser().getEmail().equals(goalList2.getUser().getEmail()));
-        assertTrue(goal2.getUser().getUsername().equals(goalList1.getUser().getUsername()) ^ goal2.getUser().getUsername().equals(goalList2.getUser().getUsername()));
-        assertTrue(goal2.getUser().getEmail().equals(goalList1.getUser().getEmail()) ^ goal2.getUser().getEmail().equals(goalList2.getUser().getEmail()));
+        assertNotNull(goalList1.getHost());
+        assertNotNull(goalList2.getHost());
+        assertTrue(goal.getHost().getUsername().equals(goalList1.getHost().getUsername()) ^ goal.getHost().getUsername().equals(goalList2.getHost().getUsername()));
+        assertTrue(goal.getHost().getEmail().equals(goalList1.getHost().getEmail()) ^ goal.getHost().getEmail().equals(goalList2.getHost().getEmail()));
+        assertTrue(goal2.getHost().getUsername().equals(goalList1.getHost().getUsername()) ^ goal2.getHost().getUsername().equals(goalList2.getHost().getUsername()));
+        assertTrue(goal2.getHost().getEmail().equals(goalList1.getHost().getEmail()) ^ goal2.getHost().getEmail().equals(goalList2.getHost().getEmail()));
     }
     @Test
     void testCreateGoalNullId(){
@@ -137,9 +137,9 @@ public class GoalServiceTest {
         assertNotNull(savedGoal);
         assertNotNull(savedGoal.getId());
         assertEquals(goal.getName(), savedGoal.getName());
-        assertNotNull(savedGoal.getUser());
-        assertEquals("username", savedGoal.getUser().getUsername());
-        assertEquals("useremail@gmail.com", savedGoal.getUser().getEmail());
+        assertNotNull(savedGoal.getHost());
+        assertEquals("username", savedGoal.getHost().getUsername());
+        assertEquals("useremail@gmail.com", savedGoal.getHost().getEmail());
         verify(userRepository).findById(145687L);
         verify(goalRepository).save(goal);
     }
