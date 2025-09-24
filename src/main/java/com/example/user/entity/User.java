@@ -63,7 +63,7 @@ public class User {
     private Set<User> followers = new HashSet<>();
 
     @ManyToMany(mappedBy = "members")
-    private Set<Goal>goals;
+    private Set<Goal>goals=new HashSet<>();
 
     @ManyToMany
     @JoinTable(

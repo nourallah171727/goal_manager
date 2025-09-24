@@ -3,6 +3,7 @@ package com.example.task.repo;
 import com.example.goal.common.GoalCategory;
 import com.example.goal.common.GoalStand;
 import com.example.goal.entity.Goal;
+import com.example.task.common.TaskDifficulty;
 import com.example.task.entity.Task;
 import com.example.user.entity.User;
 import com.example.goal.repo.GoalRepository;
@@ -51,6 +52,7 @@ public class TaskIntegrationTest {
         goal.setCategory(GoalCategory.SPORTS);
         goal.setGoalStand(GoalStand.PROGRESS);
         task = new Task("learn the course", goal);
+        task.setDifficulty(TaskDifficulty.DIFFICULT);
         goalRepository.save(goal);
         taskRepository.save(task);
         entityManager.flush();
@@ -88,6 +90,7 @@ public class TaskIntegrationTest {
     @Test
     void saveMultipleTasks(){
         Task task2 = new Task("attend the lectures", goal);
+        task2.setDifficulty(TaskDifficulty.EASY);
         taskRepository.save(task2);
         entityManager.flush();
 
@@ -107,5 +110,4 @@ public class TaskIntegrationTest {
         assertEquals(goalDB.get().getName(), retrievedTask.getGoal().getName());
         assertEquals(goalDB.get().getName(), retrievedTask2.getGoal().getName());
     }
-
 }

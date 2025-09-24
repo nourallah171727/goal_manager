@@ -27,6 +27,15 @@ public class GoalService {
         this.goalRepository = goalRepository;
         this.userRepository=userRepository;
     }
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new AccessDeniedException("No authentication found");
+        }
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+    }
 
     public Goal getGoalById(Long id) {
         if (id == null) {
@@ -120,15 +129,7 @@ public class GoalService {
                 .orElseThrow(() -> new IllegalArgumentException("userId must be valid"));
     }
 
-    private User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
-            throw new AccessDeniedException("No authentication found");
-        }
-        String username = auth.getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
-    }
+
     public void joinGoal(Long goalId, Long userId) {
         Goal goal = getGoalById(goalId);
         User user = validateAndGetUser(userId);

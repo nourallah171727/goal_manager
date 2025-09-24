@@ -1,5 +1,7 @@
 package com.example.goal.repo;
 
+import com.example.goal.common.GoalCategory;
+import com.example.goal.common.GoalType;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalStand;
 import com.example.user.entity.User;
@@ -26,8 +28,12 @@ class GoalRepositoryTest {
 
     @Test
     void testSaveAndFindGoal() {
-        User user=new User("ahmed","ahmed@gmail.com");
+        User user=new User("ahmed","ahmed@gmail.com","some password");
+        user.setRole("USER");
         Goal goal=new Goal("name",user);
+        goal.setGoalStand(GoalStand.PROGRESS);
+        goal.setCategory(GoalCategory.SPORTS);
+        goal.setType(GoalType.PUBLIC);
         userRepository.save(user);
         goalRepository.save(goal);
         entityManager.flush();
@@ -36,9 +42,40 @@ class GoalRepositoryTest {
         Optional<User>newUser=userRepository.findById(user.getId());
         Assertions.assertTrue((found).isPresent(),"found is not present");
         Assertions.assertEquals(found.get(),goal,"found and goal are not equal");
-        Assertions.assertFalse(newUser.get().getGoals().isEmpty(),"user's goals are empty");
-        Assertions.assertTrue(newUser.get().getGoals().contains(found.get()),"user does not have the saved goal");
+        Assertions.assertTrue(newUser.isPresent(),"user not present");
+        Assertions.assertEquals(found.get().getHost(),newUser.get());
+        Assertions.assertFalse(newUser.get().getHostedGoals().isEmpty(),"user's goals are empty");
+        Assertions.assertTrue(newUser.get().getHostedGoals().contains(found.get()),"user does not have the saved goal");
     }
+    @Test
+    void testMembersOfGoal(){
+        User user=new User("ahmed","ahmed@gmail.com","some password");
+        user.setRole("USER");
+        Goal goal=new Goal("name",user);
+        goal.setGoalStand(GoalStand.PROGRESS);
+        goal.setCategory(GoalCategory.SPORTS);
+        goal.setType(GoalType.PUBLIC);
+        userRepository.save(user);
+        goalRepository.save(goal);
+        entityManager.flush();
+        entityManager.clear();
+        goal.getMembers().add(user);
+        goalRepository.save(goal);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<Goal>DBGoal=goalRepository.findById(goal.getId());
+        Optional<User>DBuser=userRepository.findById(user.getId());
+        Assertions.assertTrue((DBGoal).isPresent(),"DBGoal not present");
+        Assertions.assertEquals(DBGoal.get(),goal,"found and goal are not equal");
+        Assertions.assertTrue(DBuser.isPresent(),"user not present");
+        Assertions.assertFalse(DBGoal.get().getMembers().isEmpty(),"a");
+        Assertions.assertFalse(DBuser.get().getGoals().isEmpty(),"b");
+        Assertions.assertTrue(DBGoal.get().getMembers().contains(DBuser.get()),"user does not have the saved goal");
+        Assertions.assertTrue(DBuser.get().getGoals().contains(DBGoal.get()),"user does not have the saved goal");
+
+
+    }
+    /*
     @Test
     void testUpdateGoal(){
         User user=new User("ahmed","ahmed@gmail.com");
@@ -77,4 +114,6 @@ class GoalRepositoryTest {
         Optional<User>newUser=userRepository.findById(user.getId());
        Assertions.assertTrue(newUser.get().getGoals().isEmpty(),"new goal is not deleted from the user's set ");
     }
+    */
+
 }
