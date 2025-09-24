@@ -16,7 +16,6 @@ public class Task {
     private Long id;
 
     public Task() {
-        this.taskStatus = TaskStatus.NOT_DONE;
     }
 
     public Task(String name, Goal goal) {
@@ -28,8 +27,6 @@ public class Task {
     @Column(name = "name", length = 20)
     private String name;
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private TaskStatus taskStatus;
     @Column(name="difficulty")
     TaskDifficulty difficulty;
     @ManyToOne
@@ -52,13 +49,7 @@ public class Task {
         this.name = name;
     }
 
-    public TaskStatus getTaskStatus() {
-        return taskStatus;
-    }
 
-    public void setTaskStatus(TaskStatus taskStatus) {
-        this.taskStatus = taskStatus;
-    }
 
     public Goal getGoal() {
         return goal;
@@ -80,11 +71,11 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(id, task.id) && Objects.equals(name, task.name) && taskStatus == task.taskStatus && Objects.equals(goal, task.goal);
+        return Objects.equals(id, task.id) && Objects.equals(name, task.name)  && Objects.equals(goal, task.goal);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, taskStatus, goal);
+        return Objects.hash(id, name,  goal);
     }
 }

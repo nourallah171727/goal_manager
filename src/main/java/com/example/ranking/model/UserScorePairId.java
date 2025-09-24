@@ -4,23 +4,23 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class UserScorePairId implements Serializable {
-    private Long user;   // refers to user.id
+    private Long userId;   // refers to user.id
     private Long goalId;
 
     public UserScorePairId() {}
 
-    public UserScorePairId(Long user, Long goalId) {
-        this.user = user;
+    public UserScorePairId(Long userId, Long goalId) {
+        this.userId = userId;
         this.goalId = goalId;
     }
 
     // Getters and setters
     public Long getUser() {
-        return user;
+        return userId;
     }
 
     public void setUser(Long user) {
-        this.user = user;
+        this.userId = user;
     }
 
     public Long getGoalId() {
@@ -35,12 +35,12 @@ public class UserScorePairId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserScorePairId that)) return false;
-        return Objects.equals(user, that.user) &&
+        return Objects.equals(userId, that.userId) &&
                 Objects.equals(goalId, that.goalId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, goalId);
+        return Objects.hash(userId, goalId);
     }
 }

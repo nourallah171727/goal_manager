@@ -1,6 +1,8 @@
 package com.example.task.service;
 import com.example.goal.entity.Goal;
 import com.example.goal.repo.GoalRepository;
+import com.example.ranking.model.UserScorePair;
+import com.example.ranking.repo.UserScorePairRepository;
 import com.example.task.entity.Task;
 import com.example.task.common.TaskStatus;
 import com.example.user.entity.User;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,11 +27,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final GoalRepository goalRepository;
+    private final UserScorePairRepository userScorePairRepository;
     @Autowired
-    public TaskService(TaskRepository repository,UserRepository userRepository,GoalRepository goalRepository){
+    public TaskService(TaskRepository repository,UserRepository userRepository,GoalRepository goalRepository,UserScorePairRepository userScorePairRepository){
         this.taskRepository = repository;
         this.userRepository=userRepository;
         this.goalRepository=goalRepository;
+        this.userScorePairRepository=userScorePairRepository;
     }
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -86,13 +91,18 @@ public class TaskService {
         if(tasks.isEmpty()) throw new IllegalArgumentException("no task  associated to such a goal");
         return tasks;
     }
-    //we need a way to add points to current user!
-    public Task markDone(Long id){
+
+    public void markDone(Long id){
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("cannot update non existing tasks"));
-        if(task.getTaskStatus() == TaskStatus.DONE) throw new IllegalCallerException("A fininshed task can't be remarked as done");
-        task.setTaskStatus(TaskStatus.DONE);
-        return taskRepository.save(task);
+                .orElseThrow(() -> new IllegalArgumentException("cannot update non existing tasks"));
+        if(getCurrentUser().getFinishedTasks().contains(task)){
+            throw new IllegalArgumentException("A finished task can't be remarked as done");
+        }
+        getCurrentUser().getFinishedTasks().add(task);
+        UserScorePair userScorePair=userScorePairRepository.findByGoalIdAndUserId(task.getGoal().getId(),getCurrentUser().getId()).orElseThrow(()->new IllegalArgumentException("user score pair is not found"));
+        userScorePair.setScore(userScorePair.getScore()+task.getDifficulty().getWeight());
+        userRepository.save(getCurrentUser());
+        userScorePairRepository.save(userScorePair);
     }
 
 

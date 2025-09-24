@@ -3,17 +3,20 @@ package com.example.ranking.model;
 import com.example.user.entity.User;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "goal_members")
 @IdClass(UserScorePairId.class)
 public class UserScorePair  implements Comparable<UserScorePair>{
     @Id
-    //check lazy type fetching for later
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
+
     @Id
-    @Column(name = "goal_id", nullable = false)
+    @Column(name = "goal_id")
     private Long goalId;
+
     @Column(name="score",nullable = false)
     private Integer score;
 
@@ -25,16 +28,16 @@ public class UserScorePair  implements Comparable<UserScorePair>{
         this.score = score;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(Long userId) {
+        this.userId = userId;
     }
 
-    public UserScorePair(User user, Integer score){
-        this.user=user;
+    public UserScorePair(Long userId, Integer score){
+        this.userId=userId;
         this.score=score;
     }
     public int compareTo(UserScorePair userScorePair){
@@ -42,13 +45,15 @@ public class UserScorePair  implements Comparable<UserScorePair>{
     }
 
     @Override
-    public boolean equals(Object obj) {
-       if(obj==null){
-           return false;
-       }
-       if(!(obj instanceof UserScorePair casted)){
-           return false;
-       }
-       return casted.user.getId().equals(user.getId());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserScorePair that = (UserScorePair) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(goalId, that.goalId) && Objects.equals(score, that.score);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, goalId, score);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.user.entity;
 import com.example.goal.common.GoalCategory;
 import com.example.goal.entity.Goal;
+import com.example.task.entity.Task;
 import com.example.user.common.UserEntityListener;
 import jakarta.persistence.*;
 
@@ -63,6 +64,22 @@ public class User {
 
     @ManyToMany(mappedBy = "members")
     private Set<Goal>goals;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_finished_tasks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
+    )
+    private Set<Task> finishedTasks = new HashSet<>();
+
+    public Set<Task> getFinishedTasks() {
+        return finishedTasks;
+    }
+
+    public void setFinishedTasks(Set<Task> finishedTasks) {
+        this.finishedTasks = finishedTasks;
+    }
 
     public Set<Goal> getHostedGoals() {
         return hostedGoals;

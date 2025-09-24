@@ -36,16 +36,16 @@ public class RankingOfUsersPerGoal implements Ranking<UserScorePair,Long> {
             UserScorePair pair=priorityQueue.poll();
             Objects.requireNonNull(pair);
             list.add(pair);
-            map.remove(pair.getUser().getId(),pair);
+            map.remove(pair.getUserId(),pair);
 
         }
         return list;
     }
     //O(log(n))
     public void add(UserScorePair toAdd){
-        Long userId=toAdd.getUser().getId();
+        Long userId=toAdd.getUserId();
         priorityQueue.add(toAdd);
-        map.put(toAdd.getUser().getId(),toAdd);
+        map.put(toAdd.getUserId(),toAdd);
     }
     //O(n)
     public void update(Long userId,UserScorePair newElement){
