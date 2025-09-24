@@ -65,4 +65,9 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    @PostMapping("/{id}/done")
+    public ResponseEntity<Void> markTaskAsDone(@PathVariable Long taskId) {
+        service.markDone(taskId);
+        return ResponseEntity.ok().build();
+    }
 }

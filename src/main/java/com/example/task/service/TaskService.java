@@ -93,15 +93,20 @@ public class TaskService {
     }
 
     public void markDone(Long id){
+
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("cannot update non existing tasks"));
-        if(getCurrentUser().getFinishedTasks().contains(task)){
+        User user=getCurrentUser();
+        if(user.getFinishedTasks().contains(task)){
             throw new IllegalArgumentException("A finished task can't be remarked as done");
         }
-        getCurrentUser().getFinishedTasks().add(task);
-        UserScorePair userScorePair=userScorePairRepository.findByGoalIdAndUserId(task.getGoal().getId(),getCurrentUser().getId()).orElseThrow(()->new IllegalArgumentException("user score pair is not found"));
+        if(!user.getGoals().contains(task.getGoal())){
+            throw new AccessDeniedException("you are not a member of the goal!");
+        }
+        user.getFinishedTasks().add(task);
+        UserScorePair userScorePair=userScorePairRepository.findByGoalIdAndUserId(task.getGoal().getId(),user.getId()).orElseThrow(()->new IllegalArgumentException("user score pair is not found"));
         userScorePair.setScore(userScorePair.getScore()+task.getDifficulty().getWeight());
-        userRepository.save(getCurrentUser());
+        userRepository.save(user);
         userScorePairRepository.save(userScorePair);
     }
 
