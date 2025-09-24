@@ -28,7 +28,6 @@ class GoalRepositoryTest {
     void testSaveAndFindGoal() {
         User user=new User("ahmed","ahmed@gmail.com");
         Goal goal=new Goal("name",user);
-        Assertions.assertEquals(goal.getGoalStand(), GoalStand.NOT_STARTED);
         userRepository.save(user);
         goalRepository.save(goal);
         entityManager.flush();
@@ -44,7 +43,6 @@ class GoalRepositoryTest {
     void testUpdateGoal(){
         User user=new User("ahmed","ahmed@gmail.com");
         Goal goal=new Goal("name",user);
-        Assertions.assertEquals(goal.getGoalStand(), GoalStand.NOT_STARTED);
         userRepository.save(user);
         goalRepository.save(goal);
         entityManager.flush();

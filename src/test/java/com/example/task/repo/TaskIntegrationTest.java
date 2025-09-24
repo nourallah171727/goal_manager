@@ -1,5 +1,7 @@
 package com.example.task.repo;
 
+import com.example.goal.common.GoalCategory;
+import com.example.goal.common.GoalStand;
 import com.example.goal.entity.Goal;
 import com.example.task.entity.Task;
 import com.example.user.entity.User;
@@ -40,15 +42,16 @@ public class TaskIntegrationTest {
 
     @BeforeEach
     void setup(){
-        user = new User("hacker12.5", "thisisanemail@gmail.de");
+        user = new User("hacker12.5", "thisisanemail@gmail.de","some password");
+        user.setRole("USER");
         userRepository.save(user);
         entityManager.flush();
 
         goal = new Goal("get 1.0", user);
-        goalRepository.save(goal);
-        entityManager.flush();
-
+        goal.setCategory(GoalCategory.SPORTS);
+        goal.setGoalStand(GoalStand.PROGRESS);
         task = new Task("learn the course", goal);
+        goalRepository.save(goal);
         taskRepository.save(task);
         entityManager.flush();
     }
@@ -62,9 +65,9 @@ public class TaskIntegrationTest {
         assertEquals(task.getName(), taskDB.get().getName());
         assertNotNull(taskDB.get().getGoal());
         assertEquals(goal.getName(), taskDB.get().getGoal().getName());
-        assertNotNull(taskDB.get().getGoal().getUser());
-        assertEquals(user.getUsername(), taskDB.get().getGoal().getUser().getUsername());
-        assertEquals(user.getEmail(), taskDB.get().getGoal().getUser().getEmail());
+        assertNotNull(taskDB.get().getGoal().getHost());
+        assertEquals(user.getUsername(), taskDB.get().getGoal().getHost().getUsername());
+        assertEquals(user.getEmail(), taskDB.get().getGoal().getHost().getEmail());
 
         //correctness of the goal object
         entityManager.clear();

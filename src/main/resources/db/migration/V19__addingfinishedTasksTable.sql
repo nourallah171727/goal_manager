@@ -8,4 +8,3 @@ CREATE TABLE user_finished_tasks (
     CONSTRAINT fk_user_finished_tasks_task FOREIGN KEY (task_id)
         REFERENCES tasks(task_id) ON DELETE CASCADE
 );
-ALTER TABLE tasks DROP COLUMN status;
