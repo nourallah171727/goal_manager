@@ -65,12 +65,13 @@ public class GoalService {
         }
         goal.setHost(optUser.get());
         goal.getMembers().add(optUser.get());
+        optUser.get().getGoals().add(goal);
         if(goal.getType()!= GoalType.PRIVATE){
             if(goal.getPrivateCode()!=null){
                 throw new IllegalArgumentException("public goals should have no password");
-            }else{
-                Objects.requireNonNull(goal.getPrivateCode(),"private goals should have a password");
             }
+        }else{
+            Objects.requireNonNull(goal.getPrivateCode(),"private goals should have a password");
         }
         if(goal.getTasks().isEmpty()){
             throw new IllegalArgumentException("freshly created goals should at least have one task!");
@@ -134,12 +135,14 @@ public class GoalService {
         Goal goal = getGoalById(goalId);
         User user = validateAndGetUser(userId);
         goal.getMembers().add(user);
+        user.getGoals().add(goal);
         goalRepository.save(goal);
     }
     public void leaveGoal(Long goalId, Long userId) {
         Goal goal = getGoalById(goalId);
         User user = validateAndGetUser(userId);
         goal.getMembers().remove(user);
+        user.getGoals().remove(goal);
         goalRepository.save(goal);
     }
 
