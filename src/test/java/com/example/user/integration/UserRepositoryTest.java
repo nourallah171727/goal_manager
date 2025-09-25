@@ -1,5 +1,10 @@
 package com.example.user.integration;
 
+import com.example.goal.common.GoalCategory;
+import com.example.goal.common.GoalStand;
+import com.example.goal.common.GoalType;
+import com.example.goal.entity.Goal;
+import com.example.goal.repo.GoalRepository;
 import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -20,6 +25,8 @@ class UserRepositoryTest {
     private EntityManager entityManager;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GoalRepository goalRepository;
 
     @Test
     void testSaveAndFindUser() {
@@ -58,7 +65,13 @@ class UserRepositoryTest {
     void testDeleteUser(){
         User user =new User("nourallah","nourallah@gmail.com","some password");
         user.setRole("USER");
+        Goal goal=new Goal("name",user);
+        goal.setGoalStand(GoalStand.PROGRESS);
+        goal.setCategory(GoalCategory.SPORTS);
+        goal.setType(GoalType.PUBLIC);
         userRepository.save(user);
+        goalRepository.save(goal);
+
         entityManager.flush();
         entityManager.clear();
         Optional<User>found =userRepository.findById(user.getId());
@@ -67,6 +80,7 @@ class UserRepositoryTest {
         entityManager.flush();
         entityManager.clear();
         Assertions.assertTrue(userRepository.findById(user.getId()).isEmpty());
+        Assertions.assertTrue(goalRepository.findById(goal.getId()).isEmpty());
     }
     @Test
     void followUser(){

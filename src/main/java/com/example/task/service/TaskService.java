@@ -8,6 +8,8 @@ import com.example.task.common.TaskStatus;
 import com.example.user.entity.User;
 import com.example.task.repo.TaskRepository;
 import com.example.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Transactional
@@ -28,6 +32,9 @@ public class TaskService {
     private final UserRepository userRepository;
     private final GoalRepository goalRepository;
     private final UserScorePairRepository userScorePairRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
+    //each user has his lock
     @Autowired
     public TaskService(TaskRepository repository,UserRepository userRepository,GoalRepository goalRepository,UserScorePairRepository userScorePairRepository){
         this.taskRepository = repository;
@@ -68,6 +75,7 @@ public class TaskService {
         }
         Goal goal=task.getGoal();
         goal.setTotalPoints(goal.getTotalPoints()-task.getDifficulty().getWeight());
+        Optional<UserScorePair> userScorePair=userScorePairRepository.findByGoalIdAndUserId(task.getGoal().getId(),current.getId());
         goalRepository.save(goal);
         taskRepository.delete(task);
     }
@@ -100,14 +108,13 @@ public class TaskService {
         if(user.getFinishedTasks().contains(task)){
             throw new IllegalArgumentException("A finished task can't be remarked as done");
         }
+
         if(!user.getGoals().contains(task.getGoal())){
             throw new AccessDeniedException("you are not a member of the goal!");
         }
         user.getFinishedTasks().add(task);
-        UserScorePair userScorePair=userScorePairRepository.findByGoalIdAndUserId(task.getGoal().getId(),user.getId()).orElseThrow(()->new IllegalArgumentException("user score pair is not found"));
-        userScorePair.setScore(userScorePair.getScore()+task.getDifficulty().getWeight());
         userRepository.save(user);
-        userScorePairRepository.save(userScorePair);
+        userScorePairRepository.incrementScore(task.getGoal().getId(),user.getId(),task.getDifficulty().getWeight());
     }
 
 

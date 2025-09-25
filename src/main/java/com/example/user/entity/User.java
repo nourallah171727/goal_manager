@@ -89,7 +89,7 @@ public class User {
         this.hostedGoals = hostedGoals;
     }
 
-    @OneToMany(mappedBy = "host")
+    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Goal> hostedGoals = new HashSet<>();
 
     public String getPassword() {

@@ -36,10 +36,11 @@ public class UserScorePair  implements Comparable<UserScorePair>{
         this.userId = userId;
     }
 
-    public UserScorePair(Long userId, Integer score){
+    public UserScorePair(Long userId, Long goalId){
         this.userId=userId;
-        this.score=score;
+        this.goalId=goalId;
     }
+    public UserScorePair(){}
     public int compareTo(UserScorePair userScorePair){
         return score - userScorePair.score;
     }
