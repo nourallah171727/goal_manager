@@ -3,6 +3,7 @@ package com.example.goal.service;
 import com.example.goal.common.GoalStand;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
+import com.example.ranking.repo.UserScorePairRepository;
 import com.example.user.entity.User;
 import com.example.goal.repo.GoalRepository;
 import com.example.user.repository.UserRepository;
@@ -20,10 +21,12 @@ import java.util.Optional;
 public class GoalService {
     private final GoalRepository goalRepository;
     private final UserRepository userRepository;
+    private final UserScorePairRepository userScorePairRepository;
 
 
     @Autowired
-    public GoalService(GoalRepository goalRepository,UserRepository userRepository) {
+    public GoalService(GoalRepository goalRepository,UserRepository userRepository,UserScorePairRepository userScorePairRepository) {
+        this.userScorePairRepository=userScorePairRepository;
         this.goalRepository = goalRepository;
         this.userRepository=userRepository;
     }
@@ -64,8 +67,6 @@ public class GoalService {
             throw new IllegalArgumentException("goal should not already have an ID!");
         }
         goal.setHost(optUser.get());
-        goal.getMembers().add(optUser.get());
-        optUser.get().getGoals().add(goal);
         if(goal.getType()!= GoalType.PRIVATE){
             if(goal.getPrivateCode()!=null){
                 throw new IllegalArgumentException("public goals should have no password");
@@ -77,7 +78,9 @@ public class GoalService {
             throw new IllegalArgumentException("freshly created goals should at least have one task!");
         }
         goal.setGoalStand(GoalStand.PROGRESS);
-        return goalRepository.save(goal);
+        Goal saved=goalRepository.save(goal);
+        userScorePairRepository.joinGoal(saved.getId(),userId);
+        return saved;
     }
 
     public Goal updateGoal(Long id, Goal goal) {
@@ -132,20 +135,19 @@ public class GoalService {
 
 
     public void joinGoal(Long goalId, Long userId) {
-        Goal goal = getGoalById(goalId);
-        User user = validateAndGetUser(userId);
-        goal.getMembers().add(user);
-        user.getGoals().add(goal);
-        goalRepository.save(goal);
+        if(goalRepository.findById(goalId).isEmpty() || userRepository.findById(userId).isEmpty()){
+            throw new IllegalArgumentException("either goal or user do not exist!");
+        }
+        userScorePairRepository.joinGoal(goalId,userId);
+
     }
     public void leaveGoal(Long goalId, Long userId) {
-        Goal goal = getGoalById(goalId);
-        User user = validateAndGetUser(userId);
-        goal.getMembers().remove(user);
-        user.getGoals().remove(goal);
-        goalRepository.save(goal);
+        if(goalRepository.findById(goalId).isEmpty() || userRepository.findById(userId).isEmpty()){
+            throw new IllegalArgumentException("either goal or user do not exist!");
+        }
+        userScorePairRepository.leaveGoal(goalId,userId);
     }
-
+    /*
     public void addStar(Long goalId, Long userId) {
         Goal goal = getGoalById(goalId);
         User user = validateAndGetUser(userId);
@@ -158,7 +160,7 @@ public class GoalService {
         User user = validateAndGetUser(userId);
         goal.getStarredBy().remove(user);
         goalRepository.save(goal);
-    }
+    }*/
 
     public List<Goal> findGoalsByCategory(String category) {
         if (category == null) {

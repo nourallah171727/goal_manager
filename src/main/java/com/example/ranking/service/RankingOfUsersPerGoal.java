@@ -2,7 +2,7 @@ package com.example.ranking.service;
 
 import com.example.goal.entity.Goal;
 import com.example.ranking.Ranking;
-import com.example.ranking.model.UserScorePair;
+import com.example.ranking.model.UserGoalScorePair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,10 +10,10 @@ import java.util.concurrent.PriorityBlockingQueue;
 //T : pair of User , Long stores (user , score) per goal
 //K: user_id which we will use as key of data structure
 
-public class RankingOfUsersPerGoal implements Ranking<UserScorePair,Long> {
+public class RankingOfUsersPerGoal implements Ranking<UserGoalScorePair,Long> {
     private Goal goal;
-    private PriorityBlockingQueue<UserScorePair> priorityQueue;
-    private ConcurrentHashMap<Long , UserScorePair> map;
+    private PriorityBlockingQueue<UserGoalScorePair> priorityQueue;
+    private ConcurrentHashMap<Long , UserGoalScorePair> map;
 
     public Goal getGoal() {
         return goal;
@@ -29,11 +29,11 @@ public class RankingOfUsersPerGoal implements Ranking<UserScorePair,Long> {
         map=new ConcurrentHashMap<>();
     }
     //O(k log(n)) for small k -> O(log(n))
-    public List<UserScorePair> topK(int k){
-        List<UserScorePair> list=new ArrayList<>(k);
+    public List<UserGoalScorePair> topK(int k){
+        List<UserGoalScorePair> list=new ArrayList<>(k);
         for(int i=0 ; i<k;i++){
             //O(log(n))
-            UserScorePair pair=priorityQueue.poll();
+            UserGoalScorePair pair=priorityQueue.poll();
             Objects.requireNonNull(pair);
             list.add(pair);
             map.remove(pair.getUserId(),pair);
@@ -42,21 +42,21 @@ public class RankingOfUsersPerGoal implements Ranking<UserScorePair,Long> {
         return list;
     }
     //O(log(n))
-    public void add(UserScorePair toAdd){
+    public void add(UserGoalScorePair toAdd){
         Long userId=toAdd.getUserId();
         priorityQueue.add(toAdd);
         map.put(toAdd.getUserId(),toAdd);
     }
     //O(n)
-    public void update(Long userId,UserScorePair newElement){
-        UserScorePair old=map.get(userId);
+    public void update(Long userId, UserGoalScorePair newElement){
+        UserGoalScorePair old=map.get(userId);
         priorityQueue.remove(old);
         priorityQueue.add(newElement);
         map.put(userId,newElement);
     }
     //O(n)
     public void remove(Long userId){
-        UserScorePair old=map.get(userId);
+        UserGoalScorePair old=map.get(userId);
         priorityQueue.remove(old);
         map.remove(userId,old);
     }

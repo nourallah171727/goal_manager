@@ -1,14 +1,13 @@
 package com.example.ranking.model;
 
-import com.example.user.entity.User;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "goal_members")
-@IdClass(UserScorePairId.class)
-public class UserScorePair  implements Comparable<UserScorePair>{
+@IdClass(UserGoalScorePairId.class)
+public class UserGoalScorePair implements Comparable<UserGoalScorePair>{
     @Id
     @Column(name = "user_id")
     private Long userId;
@@ -36,20 +35,33 @@ public class UserScorePair  implements Comparable<UserScorePair>{
         this.userId = userId;
     }
 
-    public UserScorePair(Long userId, Long goalId){
+    public UserGoalScorePair(Long userId, Long goalId){
         this.userId=userId;
         this.goalId=goalId;
     }
-    public UserScorePair(){}
-    public int compareTo(UserScorePair userScorePair){
-        return score - userScorePair.score;
+
+    public Long getGoalId() {
+        return goalId;
+    }
+
+    public void setGoalId(Long goalId) {
+        this.goalId = goalId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public UserGoalScorePair(){}
+    public int compareTo(UserGoalScorePair userGoalScorePair){
+        return score - userGoalScorePair.score;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserScorePair that = (UserScorePair) o;
+        UserGoalScorePair that = (UserGoalScorePair) o;
         return Objects.equals(userId, that.userId) && Objects.equals(goalId, that.goalId) && Objects.equals(score, that.score);
     }
 

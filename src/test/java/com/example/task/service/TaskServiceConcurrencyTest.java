@@ -4,15 +4,13 @@ import com.example.goal.common.GoalStand;
 import com.example.goal.common.GoalType;
 import com.example.goal.entity.Goal;
 import com.example.goal.repo.GoalRepository;
-import com.example.ranking.model.UserScorePair;
+import com.example.ranking.model.UserGoalScorePair;
 import com.example.ranking.repo.UserScorePairRepository;
 import com.example.task.common.TaskDifficulty;
 import com.example.task.entity.Task;
 import com.example.task.repo.TaskRepository;
-import com.example.task.service.TaskService;
 import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +57,7 @@ class TaskServiceConcurrencyTest {
     }
     @BeforeEach
     void setup() {
-        user = new User("testuser1d53dsaazefzazad", "test@examplzfefded2a12a3adz3.com", "pw");
+        user = new User("testuser1d53dsaazefzazfzzad", "test@examplzfzfeefded2a12a3adz3.com", "pw");
         user.setRole("USER");
         userRepository.save(user);
 
@@ -108,7 +105,7 @@ class TaskServiceConcurrencyTest {
 
         latch.await();
 
-        UserScorePair usp = userScorePairRepository.findByGoalIdAndUserId(goal.getId(), user.getId())
+        UserGoalScorePair usp = userScorePairRepository.findByGoalIdAndUserId(goal.getId(), user.getId())
                 .orElseThrow();
 
         System.out.println("Final score = " + usp.getScore());

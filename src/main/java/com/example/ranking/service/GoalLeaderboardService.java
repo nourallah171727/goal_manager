@@ -2,7 +2,7 @@ package com.example.ranking.service;
 
 import com.example.goal.repo.GoalRepository;
 import com.example.goal.entity.Goal;
-import com.example.ranking.model.UserScorePair;
+import com.example.ranking.model.UserGoalScorePair;
 import com.example.ranking.repo.UserScorePairRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class GoalLeaderboardService {
     public GoalLeaderboardService(GoalLeaderBoardManager manager) {
         this.manager = manager;
     }
-    public  List<UserScorePair> topK(int k , Long goalId){
+    public  List<UserGoalScorePair> topK(int k , Long goalId){
         Objects.requireNonNull(goalId);
         Optional<Goal> optionalGoal=goalRepository.findById(goalId);
         if(optionalGoal.isEmpty()){

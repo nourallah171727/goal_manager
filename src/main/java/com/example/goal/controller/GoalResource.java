@@ -84,6 +84,7 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    /*
     // any user
     @PostMapping("/{goalId}/star/{userId}")
     public ResponseEntity<Void> addStar(@PathVariable Long goalId, @PathVariable Long userId) {
@@ -103,7 +104,7 @@ public class GoalResource {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-    }
+    }*/
     //those I don't need for now
 
     @GetMapping("/category/{category}")

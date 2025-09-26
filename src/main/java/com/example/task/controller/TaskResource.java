@@ -36,11 +36,11 @@ public class TaskResource {
         }
     }
     //only host or admin
-    @PostMapping
-    public ResponseEntity<Task> createTask(@RequestParam("name") String name, @RequestBody Goal goal){
+    @PostMapping("/{goalId}")
+    public ResponseEntity<Task> createTask(@PathVariable Long goalId,Task task){
         try {
-            Task task = service.createTask(name, goal);
-            return ResponseEntity.ok(task);
+            Task createdTask = service.createTask(goalId, task);
+            return ResponseEntity.ok(createdTask);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -55,6 +55,7 @@ public class TaskResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    /*
     //only host or admin
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Long taskId){
@@ -64,7 +65,7 @@ public class TaskResource {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-    }
+    }*/
     @PostMapping("/{id}/done")
     public ResponseEntity<Void> markTaskAsDone(@PathVariable Long taskId) {
         service.markDone(taskId);

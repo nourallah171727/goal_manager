@@ -3,13 +3,13 @@ package com.example.ranking.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class UserScorePairId implements Serializable {
+public class UserGoalScorePairId implements Serializable {
     private Long userId;   // refers to user.id
     private Long goalId;
 
-    public UserScorePairId() {}
+    public UserGoalScorePairId() {}
 
-    public UserScorePairId(Long userId, Long goalId) {
+    public UserGoalScorePairId(Long userId, Long goalId) {
         this.userId = userId;
         this.goalId = goalId;
     }
@@ -34,7 +34,7 @@ public class UserScorePairId implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserScorePairId that)) return false;
+        if (!(o instanceof UserGoalScorePairId that)) return false;
         return Objects.equals(userId, that.userId) &&
                 Objects.equals(goalId, that.goalId);
     }
