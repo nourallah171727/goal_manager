@@ -1,8 +1,12 @@
 package com.example.goal.controller;
 
+import com.example.dto.DTOMapper;
+import com.example.dto.goal.GoalCreateDTO;
+import com.example.dto.goal.GoalResponseDTO;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
 import com.example.goal.service.GoalService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +17,18 @@ import java.util.List;
 @RequestMapping("/goal")
 public class GoalResource {
     private final GoalService goalService;
+    private final DTOMapper dtoMapper;
 
     @Autowired
-    public GoalResource(GoalService goalService) {
+    public GoalResource(GoalService goalService,DTOMapper mapper) {
         this.goalService = goalService;
+        this.dtoMapper=mapper;
     }
     //any user
     @GetMapping("/{goalId}")
-    public ResponseEntity<Goal> getGoal(@PathVariable("goalId") Long goalId) {
-        try {
+    public ResponseEntity<GoalResponseDTO> getGoal(@PathVariable("goalId") Long goalId) {
             Goal goal = goalService.getGoalById(goalId);
-            return ResponseEntity.ok(goal);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+            return ResponseEntity.ok(dtoMapper.goalToResponseDTO(goal));
     }
     //any user
     @GetMapping("/all")
@@ -36,14 +38,10 @@ public class GoalResource {
 
     //any user
     @PostMapping("/{userId}")
-    public ResponseEntity<Goal> createGoal(@PathVariable("userId") Long userId,
-                                           @RequestBody Goal goal) {
-        try {
-            Goal createdGoal = goalService.createGoal(goal, userId);
-            return ResponseEntity.ok(createdGoal);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<GoalResponseDTO> createGoal(@PathVariable("userId") Long userId,
+                                                      @RequestBody @Valid GoalCreateDTO goal) {
+            Goal createdGoal = goalService.createGoal(dtoMapper.createDtoToGoal(goal), userId);
+            return ResponseEntity.ok(dtoMapper.goalToResponseDTO(createdGoal));
     }
     //only host or admin
     @PutMapping("/{id}")

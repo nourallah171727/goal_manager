@@ -1,7 +1,11 @@
 package com.example.task.controller;
+import com.example.dto.DTOMapper;
+import com.example.dto.task.TaskCreateDTO;
+import com.example.dto.task.TaskResponseDTO;
 import com.example.goal.entity.Goal;
 import com.example.task.entity.Task;
 import com.example.task.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +16,10 @@ import java.util.List;
 @RequestMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE}, path = "/task")
 public class TaskResource {
     private final TaskService service;
-    public TaskResource(TaskService service) {
+    private final DTOMapper dtoMapper;
+    public TaskResource(TaskService service,DTOMapper dtoMapper) {
         this.service = service;
+        this.dtoMapper=dtoMapper;
     }
     //any user
     @GetMapping("/{taskId}")
@@ -37,13 +43,9 @@ public class TaskResource {
     }
     //only host or admin
     @PostMapping("/{goalId}")
-    public ResponseEntity<Task> createTask(@PathVariable Long goalId,Task task){
-        try {
-            Task createdTask = service.createTask(goalId, task);
-            return ResponseEntity.ok(createdTask);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<TaskResponseDTO> createTask(@PathVariable Long goalId,@RequestBody @Valid TaskCreateDTO task){
+            Task createdTask = service.createTask(goalId, dtoMapper.createDtoToTask(task));
+            return ResponseEntity.ok(dtoMapper.taskToResponseDTO(createdTask));
     }
     //only host or admin
     @PutMapping("/{taskId}")

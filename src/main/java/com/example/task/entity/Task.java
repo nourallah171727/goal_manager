@@ -12,7 +12,7 @@ public class Task {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id", nullable = false, unique = true)
+    @Column(name = "task_id")
     private Long id;
 
     public Task() {
@@ -24,16 +24,16 @@ public class Task {
         this.goal = goal;
     }
 
-    @Column(name = "name", length = 20)
+    @Column(name = "name")
     private String name;
     @Enumerated(EnumType.STRING)
     @Column(name="difficulty")
     TaskDifficulty difficulty;
     @ManyToOne
-    @JoinColumn(name = "task_goal", nullable = false)
+    @JoinColumn(name = "task_goal")
     private Goal goal;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

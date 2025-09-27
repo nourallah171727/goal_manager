@@ -49,7 +49,7 @@ public class TaskService {
         if (tasks.stream().anyMatch(t -> t.getName().equals(task.getName()))) {
             throw new IllegalArgumentException("Task with the same name already exists in this goal!");
         }
-
+        System.out.println(task.getName());
         task.setGoal(goal);
         goalRepository.incrementTotalPoints(goalId,task.getDifficulty().getWeight());
 

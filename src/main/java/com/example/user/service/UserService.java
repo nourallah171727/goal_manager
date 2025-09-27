@@ -28,11 +28,9 @@ public class UserService {
     }
 
     public void validateUniqueEmailAndUsrName(User user){
-        if (repository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("name already used");
-        }
-        if (repository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("email already used");
+        Optional<User> userOptional=repository.findByUsernameOrEmail(user.getUsername(),user.getEmail());
+        if(userOptional.isPresent()){
+            throw new IllegalArgumentException("user already exists");
         }
     }
 

@@ -42,12 +42,15 @@ class OnboardingUser(HttpUser):
         # 3. Create a goal for that user
         goal_payload = {
             "name": "My First Goal",
-            "type": "FITNESS",   # adapt to your GoalType enum
-            "category": "HEALTH"
+            "category": "HEALTH",
+            "type":"PUBLIC",
+            "votesToMarkCompleted":2,
+            "tasks":[{"name":"task1","difficulty":"DIFFICULT"}]
+
         }
         goal_resp = self.client.post(f"/goal/{user_id}", json=goal_payload, headers=headers, name="/goal/{userId}")
         if not (200 <= goal_resp.status_code < 300):
-            print(f"❌ Failed to create goal: {goal_resp.status_code}")
+            print(f"❌ Failed to create goal: {goal_resp.status_code} | Body: {goal_resp.text}")
             return
 
         goal_id = goal_resp.json().get("id")
@@ -57,7 +60,7 @@ class OnboardingUser(HttpUser):
         # 4. Create a task under that goal
         task_payload = {
             "name": "First Task",
-            "difficulty": "EASY"   # adapt to your TaskDifficulty enum if needed
+            "difficulty": "EASY"
         }
         task_resp = self.client.post(f"/task/{goal_id}", json=task_payload, headers=headers, name="/task/{goalId}")
         if not (200 <= task_resp.status_code < 300):

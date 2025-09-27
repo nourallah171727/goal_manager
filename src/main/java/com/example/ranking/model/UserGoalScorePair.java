@@ -16,6 +16,12 @@ public class UserGoalScorePair implements Comparable<UserGoalScorePair>{
     @Column(name = "goal_id")
     private Long goalId;
 
+    public UserGoalScorePair(Long userId, Long goalId, Integer score) {
+        this.userId = userId;
+        this.goalId = goalId;
+        this.score = score;
+    }
+
     @Column(name="score",nullable = false)
     private Integer score;
 

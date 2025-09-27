@@ -1,9 +1,9 @@
 package com.example.user.controller;
 
-import com.example.user.dto.DTOMapper;
-import com.example.user.dto.UserCreateDTO;
-import com.example.user.dto.UserResponseDTO;
-import com.example.user.dto.UserUpdateDTO;
+import com.example.dto.DTOMapper;
+import com.example.dto.user.UserCreateDTO;
+import com.example.dto.user.UserResponseDTO;
+import com.example.dto.user.UserUpdateDTO;
 import com.example.user.entity.User;
 import com.example.user.service.UserService;
 import jakarta.validation.Valid;
