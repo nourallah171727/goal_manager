@@ -1,6 +1,7 @@
 package com.example.security;
 
 import com.example.task.service.TaskService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,7 +28,7 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers(HttpMethod.POST, "/user").permitAll() // create user
 
-                        // User endpoints (must be authenticated)
+                        // User endpoints
                         .requestMatchers(HttpMethod.GET, "/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/user/**").hasAnyRole("USER", "ADMIN")
@@ -36,13 +37,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/user/*/follow/**").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/user/*/unfollow/**").hasRole("USER")
 
-
                         // Default rule
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
-                .httpBasic(withDefaults())  // Basic auth (Authorization: Basic header)
-                .formLogin(withDefaults())  // OR use form login
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(form -> form
+                        .successHandler((req, res, auth) -> {
+                            res.setStatus(HttpServletResponse.SC_OK);
+                        })
+                        .failureHandler((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        })
+                        .permitAll()
+                )
                 .build();
     }
 }

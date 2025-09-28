@@ -24,15 +24,5 @@ public interface UserScorePairRepository extends JpaRepository<UserGoalScorePair
     void incrementScore(@Param("goalId") Long goalId,
                        @Param("userId") Long userId,
                        @Param("weight") int weight);
-    @Modifying
-    @Query("INSERT INTO UserGoalScorePair(goalId, userId, score) " +
-            "SELECT :goalId, :userId, 0 " +
-            "WHERE NOT EXISTS (SELECT 1 FROM UserGoalScorePair u " +
-            "                  WHERE u.goalId = :goalId AND u.userId = :userId)")
-    void joinGoal(@Param("goalId") Long goalId, @Param("userId") Long userId);
-    @Modifying
-    @Query("DELETE FROM UserGoalScorePair u " +
-            "WHERE u.goalId = :goalId AND u.userId = :userId")
-    void leaveGoal(@Param("goalId") Long goalId, @Param("userId") Long userId);
     boolean existsByUserIdAndGoalId( Long userId,Long goalId);
 }
