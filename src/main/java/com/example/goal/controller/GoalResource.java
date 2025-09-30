@@ -65,12 +65,8 @@ public class GoalResource {
     //any user if not host and not already joined
     @PostMapping("/{goalId}/join/{userId}")
     public ResponseEntity<Void> joinGoal(@PathVariable Long goalId, @PathVariable Long userId) {
-        try {
             goalService.joinGoal(goalId, userId);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
     //only if already joined in
     @DeleteMapping("/{goalId}/leave/{userId}")

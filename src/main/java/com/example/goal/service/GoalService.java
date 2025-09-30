@@ -5,6 +5,7 @@ import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
 import com.example.ranking.repo.UserScorePairRepository;
 import com.example.ranking.service.UserScorePairService;
+import com.example.task.entity.Task;
 import com.example.user.entity.User;
 import com.example.goal.repo.GoalRepository;
 import com.example.user.repository.UserRepository;
@@ -79,6 +80,9 @@ public class GoalService {
             throw new IllegalArgumentException("freshly created goals should at least have one task!");
         }
         goal.setGoalStand(GoalStand.PROGRESS);
+        for(Task task:goal.getTasks()){
+            task.setGoal(goal);
+        }
         Goal saved=goalRepository.save(goal);
         userScorePairService.joinGoal(userId,saved.getId());
         return saved;
@@ -136,6 +140,10 @@ public class GoalService {
 
 
     public void joinGoal(Long goalId, Long userId) {
+        User user=getCurrentUser();
+        if(!user.getId().equals(userId)){
+            throw new AccessDeniedException("not authorized");
+        }
         if(goalRepository.findById(goalId).isEmpty() || userRepository.findById(userId).isEmpty()){
             throw new IllegalArgumentException("either goal or user do not exist!");
         }
@@ -145,6 +153,10 @@ public class GoalService {
     public void leaveGoal(Long goalId, Long userId) {
         if(goalRepository.findById(goalId).isEmpty() || userRepository.findById(userId).isEmpty()){
             throw new IllegalArgumentException("either goal or user do not exist!");
+        }
+        User user=getCurrentUser();
+        if(!user.getId().equals(userId)){
+            throw new AccessDeniedException("not authorized");
         }
         userScorePairService.leaveGoal(userId,goalId);
     }

@@ -22,7 +22,7 @@ public class UserScorePairService {
         this.userRepository=userRepository;
         this.goalRepository=goalRepository;
     }
-    public void joinGoal(Long userId,Long goalId){
+    public void joinGoal(Long goalId,Long userId){
         User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("user not found"));
         Goal goal=goalRepository.findById(goalId).orElseThrow(()->new IllegalArgumentException("goal not found"));
         if(userScorePairRepository.existsByUserIdAndGoalId(userId,goalId)){
