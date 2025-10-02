@@ -193,11 +193,11 @@ public class Goal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Goal goal = (Goal) o;
-        return Objects.equals(id, goal.id) && Objects.equals(name, goal.name) && goalStand == goal.goalStand && Objects.equals(dueDate, goal.dueDate) && Objects.equals(host, goal.host) ;
+        return Objects.equals(id, goal.id)  ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, goalStand, dueDate, host);
+        return Objects.hash(id);
     }
 }

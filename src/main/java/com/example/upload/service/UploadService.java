@@ -87,9 +87,7 @@ public class UploadService {
 
         return strDestination;
     }
-    private String sanitizeFileName(String original) {
-        return original.replaceAll("[^a-zA-Z0-9\\.\\-_]", "_");
-    }
+
     public Resource downloadFile(Long taskId){
         Task task=taskRepository.findById(taskId).orElseThrow(()->new IllegalArgumentException("task not found"));
         User user=getCurrentUser();
@@ -99,6 +97,10 @@ public class UploadService {
         Upload upload=uploadRepository.findById(new UploadId(user.getId(),taskId))
                 .orElseThrow(()->new IllegalArgumentException("either task or user are not found"));
         return new FileSystemResource(Path.of(upload.getFilePath()));
+    }
+
+    private String sanitizeFileName(String original) {
+        return original.replaceAll("[^a-zA-Z0-9\\.\\-_]", "_");
     }
 
 

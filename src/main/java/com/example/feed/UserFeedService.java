@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -55,15 +54,10 @@ public class UserFeedService {
     private void sortGoals(List<Goal> goals) {
         goals.sort(Comparator.comparingDouble(this::score).reversed());
     }
-
+    //logic is super simplified now , better algorithms to implement later!
     private double score(Goal g) {
-        double memberFactor = Math.log(g.getMembers().size() + 1); // more members, more value
-        double timeFactor = 0.0;
-        if (g.getDueDate() != null) {
-            long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), g.getDueDate());
-            timeFactor = daysLeft > 0 ? 1.0 / daysLeft : 0.0; // sooner = higher
-        }
-        return memberFactor + timeFactor;
+        return Math.log(g.getMembers().size()); // more members, more value
+
     }
 
     private List<Goal> mergeGoals(List<Goal> A, List<Goal> B, int limit) {
@@ -77,10 +71,10 @@ public class UserFeedService {
             if (i < A.size() && j < B.size()) {
                 pickA = random.nextDouble() < 0.7;
             } else {
-                pickA = j >= B.size(); // only A left
+                pickA = j >= B.size();
             }
 
-            if (pickA && i < A.size()) {
+            if (pickA) {
                 result.add(A.get(i++));
             } else if (j < B.size()) {
                 result.add(B.get(j++));
