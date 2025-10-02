@@ -14,12 +14,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class GoalService {
     private final GoalRepository goalRepository;
     private final UserRepository userRepository;
@@ -50,7 +53,7 @@ public class GoalService {
                 .orElseThrow(() -> new IllegalArgumentException("no goal with such ID"));
     }
 
-    public List<Goal> getGoals() {
+    public List<Goal> getGoals(Long userId) {
         return goalRepository.findAll();
     }
 
@@ -80,9 +83,12 @@ public class GoalService {
             throw new IllegalArgumentException("freshly created goals should at least have one task!");
         }
         goal.setGoalStand(GoalStand.PROGRESS);
+        int totalPoints=0;
         for(Task task:goal.getTasks()){
             task.setGoal(goal);
+            totalPoints+=task.getDifficulty().getWeight();
         }
+        goal.setTotalPoints(totalPoints);
         Goal saved=goalRepository.save(goal);
         userScorePairService.joinGoal(userId,saved.getId());
         return saved;
@@ -106,6 +112,9 @@ public class GoalService {
         boolean isHost = existingGoal.getHost().getId().equals(currentUser.getId());
         if (!isAdmin && !isHost) {
             throw new AccessDeniedException("You are not allowed to update this goal");
+        }
+        if(LocalDate.now().isAfter(goal.getDueDate())){
+            throw new IllegalStateException("can't updated an expired goal");
         }
 
 
@@ -144,8 +153,12 @@ public class GoalService {
         if(!user.getId().equals(userId)){
             throw new AccessDeniedException("not authorized");
         }
-        if(goalRepository.findById(goalId).isEmpty() || userRepository.findById(userId).isEmpty()){
+        Goal goal=goalRepository.findById(goalId).orElseThrow(()->new IllegalArgumentException("goal not exist"));
+        if(userRepository.findById(userId).isEmpty()){
             throw new IllegalArgumentException("either goal or user do not exist!");
+        }
+        if(LocalDate.now().isAfter(goal.getDueDate())){
+            throw new IllegalStateException("can't join a goal that's expired");
         }
         userScorePairService.joinGoal(goalId,userId);
 
@@ -155,8 +168,12 @@ public class GoalService {
             throw new IllegalArgumentException("either goal or user do not exist!");
         }
         User user=getCurrentUser();
-        if(!user.getId().equals(userId)){
-            throw new AccessDeniedException("not authorized");
+        Goal goal=goalRepository.findById(goalId).orElseThrow(()->new IllegalArgumentException("goal not exist"));
+        if(userRepository.findById(userId).isEmpty()){
+            throw new IllegalArgumentException("either goal or user do not exist!");
+        }
+        if(LocalDate.now().isAfter(goal.getDueDate())){
+            throw new IllegalStateException("can't join a goal that's expired");
         }
         userScorePairService.leaveGoal(userId,goalId);
     }

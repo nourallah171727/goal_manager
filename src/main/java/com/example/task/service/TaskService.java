@@ -1,6 +1,8 @@
 package com.example.task.service;
 import com.example.goal.entity.Goal;
 import com.example.goal.repo.GoalRepository;
+import com.example.ranking.model.UserGoalScorePair;
+import com.example.ranking.model.UserGoalScorePairId;
 import com.example.ranking.repo.UserScorePairRepository;
 import com.example.task.entity.Task;
 import com.example.user.entity.User;
@@ -13,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -44,12 +47,14 @@ public class TaskService {
         if (!(isAdmin || goal.getHost().getId().equals(current.getId()))) {
             throw new AccessDeniedException("Not authorized to create task in this goal");
         }
+        if(goal.getDueDate()!=null && LocalDate.now().isAfter(goal.getDueDate())){
+            throw new IllegalStateException("can't add a task for an expired goal");
+        }
 
         List<Task> tasks = taskRepository.findByGoal(goal);
         if (tasks.stream().anyMatch(t -> t.getName().equals(task.getName()))) {
             throw new IllegalArgumentException("Task with the same name already exists in this goal!");
         }
-        System.out.println(task.getName());
         task.setGoal(goal);
         goalRepository.incrementTotalPoints(goalId,task.getDifficulty().getWeight());
 
@@ -79,6 +84,9 @@ public class TaskService {
         if (!(isAdmin || task.getGoal().getHost().getId().equals(current.getId()))) {
             throw new AccessDeniedException("Not authorized to update this task");
         }
+        if(task.getGoal().getDueDate()!=null && LocalDate.now().isAfter(task.getGoal().getDueDate())){
+            throw new IllegalStateException("can't add a task for an expired goal");
+        }
         task.setName(name);
         return taskRepository.save(task);
     }
@@ -91,22 +99,28 @@ public class TaskService {
         return tasks;
     }
 
-    public void markDone(Long id){
+    public void markDone(Long taskId,Long userId){
 
-        Task task = taskRepository.findById(id)
+        Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("cannot update non existing tasks"));
-        User user=getCurrentUser();
-        if(user.getFinishedTasks().contains(task)){
-            throw new IllegalArgumentException("A finished task can't be remarked as done");
+        if(task.getGoal().getDueDate()!=null && LocalDate.now().isAfter(task.getGoal().getDueDate())){
+            throw new IllegalStateException("can't mark a task as done for an expired goal");
         }
+        User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("user not found"));
 
         if(!user.getGoals().contains(task.getGoal())){
             throw new AccessDeniedException("you are not a member of the goal!");
         }
-        user.getFinishedTasks().add(task);
-        userRepository.save(user);
-        userScorePairRepository.incrementScore(task.getGoal().getId(),user.getId(),task.getDifficulty().getWeight());
-    }
+
+        if(user.getFinishedTasks().contains(task)){
+            throw new IllegalArgumentException("A finished task can't be remarked as done");
+        }
+
+        userRepository.insertFinishedTask(taskId,userId);
+
+        userScorePairRepository.incrementScore(task.getGoal().getId(),userId,task.getDifficulty().getWeight());
+
+   }
 
 
 }

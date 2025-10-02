@@ -9,10 +9,24 @@ import org.springframework.data.repository.query.Param;
 
 public interface UploadRepository extends JpaRepository< Upload , UploadId> {
     @Modifying
-    @Query("UPDATE Upload u " +
-            "SET u.currentVotes = u.currentVotes + 1 " +
-            "WHERE u.user.id = :userId AND u.task.id = :taskId")
-    void incrementVotes(@Param("userId") Long userId,
-                       @Param("taskId") Long taskId);
+    @Query("""
+    UPDATE Upload u
+    SET u.currentVotes = u.currentVotes + 1
+    WHERE u.userId = :userId
+    AND u.taskId = :taskId
+    AND u.currentVotes < :required
+    """)
+    int incrementVotesIfBelowThreshold(@Param("userId") Long userId,
+                                  @Param("taskId") Long taskId,
+                                  @Param("required") int required);
+    @Modifying
+    @Query("""
+    DELETE FROM Upload u
+    WHERE u.userId = :userId AND u.taskId = :taskId
+    AND u.currentVotes = :requiredVotes
+""")
+    int deleteIfAtThreshold(@Param("userId") Long userId,
+                            @Param("taskId") Long taskId,
+                            @Param("requiredVotes") int requiredVotes);
 
 }

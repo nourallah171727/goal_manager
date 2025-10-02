@@ -30,11 +30,14 @@ public class GoalResource {
             Goal goal = goalService.getGoalById(goalId);
             return ResponseEntity.ok(dtoMapper.goalToResponseDTO(goal));
     }
+    /*
     //any user
     @GetMapping("/all")
     public ResponseEntity<List<Goal>> getAllGoals() {
         return ResponseEntity.ok(goalService.getGoals());
     }
+    */
+
 
     //any user
     @PostMapping("/{userId}")

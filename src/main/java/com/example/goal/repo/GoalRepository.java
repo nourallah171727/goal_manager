@@ -4,6 +4,8 @@ package com.example.goal.repo;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
 import com.example.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,5 +26,5 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
             "WHERE g.id = :goalId")
     void incrementTotalPoints(@Param("goalId") Long goalId,
                               @Param("points") int points);
-
+    Page<Goal> findAll(Pageable pageable);
 }

@@ -61,7 +61,7 @@ public class User {
     // Users that follow this user
     @ManyToMany(mappedBy = "following")
     private Set<User> followers = new HashSet<>();
-
+    //goals that the user is joining
     @ManyToMany(mappedBy = "members")
     private Set<Goal>goals=new HashSet<>();
 
