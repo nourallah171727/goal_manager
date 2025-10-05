@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     boolean existsByHost_Id(Long userId);
@@ -27,4 +28,11 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
     void incrementTotalPoints(@Param("goalId") Long goalId,
                               @Param("points") int points);
     Page<Goal> findAll(Pageable pageable);
+
+    @Query("SELECT DISTINCT g FROM Goal g JOIN g.members m " +
+            "WHERE m IN :followedPeople")
+    Page<Goal> findGoalsByPeopleWeFollow(@Param("followers") Set<User> followedPeople, Pageable pageable);
+
+    @Query("SELECT g FROM Goal g ORDER BY SIZE(g.members) DESC")
+    Page<Goal> findPopularGoals(Pageable pageable);
 }
