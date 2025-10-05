@@ -1,0 +1,30 @@
+package com.tum.goal_manager.goal.repo;
+
+
+import com.tum.goal_manager.goal.entity.Goal;
+import com.tum.goal_manager.goal.common.GoalType;
+import com.tum.goal_manager.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface GoalRepository extends JpaRepository<Goal, Long> {
+    boolean existsByHost_Id(Long userId);
+    List<Goal> findByHost_Id(Long userId);
+    List<Goal> findByHost(User user);
+    List<Goal> findByMembersContaining(User user);
+    List<Goal> findByType(GoalType type);
+    List<Goal> findByCategory(String category);
+    @Modifying
+    @Query("UPDATE Goal g " +
+            "SET g.totalPoints = g.totalPoints + :points " +
+            "WHERE g.id = :goalId")
+    void incrementTotalPoints(@Param("goalId") Long goalId,
+                              @Param("points") int points);
+    Page<Goal> findAll(Pageable pageable);
+}
