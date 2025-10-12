@@ -13,7 +13,7 @@ public class VoteController {
     public VoteController(VoteService voteService){
         this.voteService=voteService;
     }
-    @PostMapping("/{taskId}/user/{votedUserId}")
+    @PostMapping("/{taskId}/uploader/{votedUserId}")
     public ResponseEntity<Void> voteForUpload(@PathVariable Long taskId,
                                               @PathVariable Long votedUserId) {
         voteService.voteFor(votedUserId, taskId);

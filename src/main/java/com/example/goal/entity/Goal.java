@@ -25,9 +25,6 @@ public class Goal {
     @NotNull
     @Column(name = "name")
     private String name;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "stand")
-    private GoalStand goalStand;
 
     @Column(name = "due_date")
     private LocalDate dueDate;
@@ -106,13 +103,7 @@ public class Goal {
         this.name = name;
     }
 
-    public GoalStand getGoalStand() {
-        return goalStand;
-    }
 
-    public void setGoalStand(GoalStand goalStand) {
-        this.goalStand = goalStand;
-    }
 
 
 

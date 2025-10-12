@@ -116,10 +116,9 @@ public class TaskService {
             throw new IllegalArgumentException("A finished task can't be remarked as done");
         }
 
-        userRepository.insertFinishedTask(taskId,userId);
+        userRepository.insertFinishedTask(userId,taskId);
 
-        userScorePairRepository.incrementScore(task.getGoal().getId(),userId,task.getDifficulty().getWeight());
-
+       userScorePairRepository.incrementScore(task.getGoal().getId(),userId,task.getDifficulty().getWeight());
    }
 
 

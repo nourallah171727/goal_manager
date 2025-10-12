@@ -89,7 +89,7 @@ public class UserService {
 
 
         if (!currentUser.getId().equals(followerId) ) {
-            throw new AccessDeniedException("You cannot delete this user");
+            throw new AccessDeniedException("You cannot follow this user");
         }
         Optional<User>follower=repository.findById(followerId);
         Optional<User>followee=repository.findById(followeeId);
@@ -113,7 +113,7 @@ public class UserService {
 
 
         if (!currentUser.getId().equals(followerId) ) {
-            throw new AccessDeniedException("You cannot delete this user");
+            throw new AccessDeniedException("You cannot unfollow this user");
         }
         Optional<User>follower=repository.findById(followerId);
         Optional<User>followee=repository.findById(followeeId);
@@ -122,6 +122,9 @@ public class UserService {
         }
         if(follower.get().getId().equals(followee.get().getId())){
             throw new IllegalArgumentException("can't unfollow yourself");
+        }
+        if(!follower.get().getFollowing().contains(followee.get()) || !followee.get().getFollowers().contains(follower.get())){
+            throw new IllegalArgumentException("the follow relationship does not exist!");
         }
         follower.get().getFollowing().remove(followee.get());
         followee.get().getFollowers().remove(follower.get());

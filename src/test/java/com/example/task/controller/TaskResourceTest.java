@@ -47,7 +47,6 @@ class TaskResourceTest {
         goal.setCategory(GoalCategory.HEALTH);
         goal.setType(GoalType.PUBLIC);
         goal.setHost(user);
-        goal.setGoalStand(GoalStand.PROGRESS);
         goalRepository.save(goal);
 
         // Build the task payload

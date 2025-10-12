@@ -52,7 +52,6 @@ public class JoinEndToEndTest{
         goal.setCategory(GoalCategory.HEALTH);
         goal.setType(GoalType.PUBLIC);
         goal.setVotesToMarkCompleted(1);
-        goal.setGoalStand(GoalStand.PROGRESS);
         goal.setHost(user);
         goal = goalRepository.save(goal);
 

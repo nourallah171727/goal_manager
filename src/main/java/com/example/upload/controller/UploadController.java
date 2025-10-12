@@ -16,15 +16,15 @@ public class UploadController {
     public UploadController(UploadService uploadService){
         this.uploadService=uploadService;
     }
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@PathVariable Long task_id, @RequestParam("file") MultipartFile file) {
-        String storedFilePath = uploadService.storeFile(file ,task_id);
+    @PostMapping("/upload/{taskId}")
+    public ResponseEntity<String> uploadFile(@PathVariable Long taskId, @RequestParam("file") MultipartFile file) {
+        String storedFilePath = uploadService.storeFile(file ,taskId);
 
         return ResponseEntity.ok("File uploaded successfully: " + storedFilePath);
     }
-    @GetMapping("/{taskId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long taskId) {
-        Resource resource = uploadService.downloadFile(taskId);
+    @GetMapping("{userId}/download/{taskId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long userId ,@PathVariable Long taskId) {
+        Resource resource = uploadService.downloadFile(userId,taskId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""

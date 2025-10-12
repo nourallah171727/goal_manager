@@ -50,7 +50,6 @@ public class TaskIntegrationTest {
 
         goal = new Goal("get 1.0", user);
         goal.setCategory(GoalCategory.SPORTS);
-        goal.setGoalStand(GoalStand.PROGRESS);
         task = new Task("learn the course", goal);
         task.setDifficulty(TaskDifficulty.DIFFICULT);
         goalRepository.save(goal);

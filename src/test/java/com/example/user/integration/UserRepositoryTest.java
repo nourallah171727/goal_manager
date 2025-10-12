@@ -66,7 +66,6 @@ class UserRepositoryTest {
         User user =new User("nourallah","nourallah@gmail.com","some password");
         user.setRole("USER");
         Goal goal=new Goal("name",user);
-        goal.setGoalStand(GoalStand.PROGRESS);
         goal.setCategory(GoalCategory.SPORTS);
         goal.setType(GoalType.PUBLIC);
         userRepository.save(user);

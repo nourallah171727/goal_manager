@@ -55,7 +55,7 @@ public class UploadService {
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new AccessDeniedException("User not found"));
+                .orElseThrow();
     }
 
     public String storeFile(MultipartFile file,  Long taskId){
@@ -88,13 +88,13 @@ public class UploadService {
         return strDestination;
     }
 
-    public Resource downloadFile(Long taskId){
+    public Resource downloadFile(Long userUploaderId,Long taskId ){
         Task task=taskRepository.findById(taskId).orElseThrow(()->new IllegalArgumentException("task not found"));
-        User user=getCurrentUser();
-        if(!task.getGoal().getMembers().contains(user)){
+        User downloaderUser=getCurrentUser();
+        if(!task.getGoal().getMembers().contains(downloaderUser)){
             throw new AccessDeniedException("not authorized to see a file , for a goal's task u did not join");
         }
-        Upload upload=uploadRepository.findById(new UploadId(user.getId(),taskId))
+        Upload upload=uploadRepository.findById(new UploadId(userUploaderId,taskId))
                 .orElseThrow(()->new IllegalArgumentException("either task or user are not found"));
         return new FileSystemResource(Path.of(upload.getFilePath()));
     }

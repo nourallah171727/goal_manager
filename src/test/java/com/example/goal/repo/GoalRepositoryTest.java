@@ -31,7 +31,6 @@ class GoalRepositoryTest {
         User user=new User("ahmed","ahmed@gmail.com","some password");
         user.setRole("USER");
         Goal goal=new Goal("name",user);
-        goal.setGoalStand(GoalStand.PROGRESS);
         goal.setCategory(GoalCategory.SPORTS);
         goal.setType(GoalType.PUBLIC);
         userRepository.save(user);
@@ -52,7 +51,6 @@ class GoalRepositoryTest {
         User user=new User("ahmed","ahmed@gmail.com","some password");
         user.setRole("USER");
         Goal goal=new Goal("name",user);
-        goal.setGoalStand(GoalStand.PROGRESS);
         goal.setCategory(GoalCategory.SPORTS);
         goal.setType(GoalType.PUBLIC);
         userRepository.save(user);

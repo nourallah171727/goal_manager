@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +28,6 @@ public class VoteService {
     private final UploadRepository uploadRepository;
     private final TaskService taskService;
     private final UserRepository userRepository;
-    private final ConcurrentHashMap<UploadId, Object> uploadLocks = new ConcurrentHashMap<>();
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
@@ -65,6 +65,7 @@ public class VoteService {
         entityManager.clear();
 
         Upload upload=uploadRepository.findById(key).orElseThrow();
+
         if(isUploadedSuccessfully==1 && upload.getCurrentVotes()==task.getGoal().getVotesToMarkCompleted()){
             uploadRepository.delete(upload);
             taskService.markDone(taskId,votedUserId);

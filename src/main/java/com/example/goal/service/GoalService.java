@@ -82,7 +82,6 @@ public class GoalService {
         if(goal.getTasks().isEmpty()){
             throw new IllegalArgumentException("freshly created goals should at least have one task!");
         }
-        goal.setGoalStand(GoalStand.PROGRESS);
         int totalPoints=0;
         for(Task task:goal.getTasks()){
             task.setGoal(goal);
