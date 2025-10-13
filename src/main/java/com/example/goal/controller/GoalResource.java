@@ -3,6 +3,7 @@ package com.example.goal.controller;
 import com.example.dto.DTOMapper;
 import com.example.dto.goal.GoalCreateDTO;
 import com.example.dto.goal.GoalResponseDTO;
+import com.example.dto.goal.GoalUpdateDTO;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
 import com.example.goal.service.GoalService;
@@ -30,13 +31,6 @@ public class GoalResource {
             Goal goal = goalService.getGoalById(goalId);
             return ResponseEntity.ok(dtoMapper.goalToResponseDTO(goal));
     }
-    /*
-    //any user
-    @GetMapping("/all")
-    public ResponseEntity<List<Goal>> getAllGoals() {
-        return ResponseEntity.ok(goalService.getGoals());
-    }
-    */
 
 
     //any user
@@ -48,9 +42,9 @@ public class GoalResource {
     }
     //only host or admin
     @PutMapping("/{id}")
-    public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody Goal goalDetails) {
+    public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody GoalUpdateDTO goalDetails) {
         try {
-            return ResponseEntity.ok(goalService.updateGoal(id, goalDetails));
+            return ResponseEntity.ok(goalService.updateGoal(id, dtoMapper.up));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -101,7 +95,7 @@ public class GoalResource {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-    }*/
+    }
     //those I don't need for now
 
     @GetMapping("/category/{category}")
@@ -139,4 +133,6 @@ public class GoalResource {
             return ResponseEntity.badRequest().build();
         }
     }
+    */
+
 }
