@@ -200,8 +200,10 @@ public class UserEndpointsEndToEndTest {
         followee.setRole("USER");
         userRepository.save(followee);
         userRepository.save(follower);
-        followee.getFollowers().add(follower);
-        userRepository.save(followee);
+        follower.getFollowing().add(followee);
+        userRepository.save(follower);
+        entityManager.flush();
+        entityManager.clear();
 
 
         mockMvc.perform(delete("/user/{followerId}/unfollow/{followeeId}", follower.getId(), followee.getId()))

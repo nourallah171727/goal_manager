@@ -1,7 +1,6 @@
-package com.example.user.integration;
+package com.example.user;
 
 import com.example.goal.common.GoalCategory;
-import com.example.goal.common.GoalStand;
 import com.example.goal.common.GoalType;
 import com.example.goal.entity.Goal;
 import com.example.goal.repo.GoalRepository;
