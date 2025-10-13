@@ -3,16 +3,12 @@ package com.example.goal.controller;
 import com.example.dto.DTOMapper;
 import com.example.dto.goal.GoalCreateDTO;
 import com.example.dto.goal.GoalResponseDTO;
-import com.example.dto.goal.GoalUpdateDTO;
 import com.example.goal.entity.Goal;
-import com.example.goal.common.GoalType;
 import com.example.goal.service.GoalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/goal")
@@ -39,15 +35,6 @@ public class GoalResource {
                                                       @RequestBody @Valid GoalCreateDTO goal) {
             Goal createdGoal = goalService.createGoal(dtoMapper.createDtoToGoal(goal), userId);
             return ResponseEntity.ok(dtoMapper.goalToResponseDTO(createdGoal));
-    }
-    //only host or admin
-    @PutMapping("/{id}")
-    public ResponseEntity<Goal> updateGoal(@PathVariable("id") Long id, @RequestBody GoalUpdateDTO goalDetails) {
-        try {
-            return ResponseEntity.ok(goalService.updateGoal(id, dtoMapper.up));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
     //only host or admin
     @DeleteMapping("/{id}")
