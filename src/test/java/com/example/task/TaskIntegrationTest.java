@@ -1,10 +1,10 @@
-package com.example.task.repo;
+package com.example.task;
 
 import com.example.goal.common.GoalCategory;
-import com.example.goal.common.GoalStand;
 import com.example.goal.entity.Goal;
 import com.example.task.common.TaskDifficulty;
 import com.example.task.entity.Task;
+import com.example.task.repo.TaskRepository;
 import com.example.user.entity.User;
 import com.example.goal.repo.GoalRepository;
 import com.example.user.repository.UserRepository;
