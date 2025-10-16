@@ -152,7 +152,7 @@ public class GoalService {
         if(userRepository.findById(userId).isEmpty()){
             throw new IllegalArgumentException("either goal or user do not exist!");
         }
-        if(LocalDate.now().isAfter(goal.getDueDate())){
+        if(goal.getDueDate()!=null && (goal.getDueDate().isBefore(LocalDate.now()))){
             throw new IllegalStateException("can't join a goal that's expired");
         }
         userScorePairService.joinGoal(goalId,userId);
@@ -167,7 +167,7 @@ public class GoalService {
         if(userRepository.findById(userId).isEmpty()){
             throw new IllegalArgumentException("either goal or user do not exist!");
         }
-        if(LocalDate.now().isAfter(goal.getDueDate())){
+        if(goal.getDueDate()!=null && goal.getDueDate().isBefore(LocalDate.now())){
             throw new IllegalStateException("can't join a goal that's expired");
         }
         userScorePairService.leaveGoal(userId,goalId);

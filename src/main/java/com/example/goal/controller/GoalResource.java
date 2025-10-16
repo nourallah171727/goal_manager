@@ -39,12 +39,8 @@ public class GoalResource {
     //only host or admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGoal(@PathVariable("id") Long id) {
-        try {
             goalService.deleteById(id);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
     //any user if not host and not already joined
     @PostMapping("/{goalId}/join/{userId}")
@@ -55,12 +51,8 @@ public class GoalResource {
     //only if already joined in
     @DeleteMapping("/{goalId}/leave/{userId}")
     public ResponseEntity<Void> leaveGoal(@PathVariable Long goalId, @PathVariable Long userId) {
-        try {
             goalService.leaveGoal(goalId, userId);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
     /*
     // any user
