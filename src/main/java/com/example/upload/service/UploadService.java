@@ -78,6 +78,7 @@ public class UploadService {
         try {
             Files.copy(file.getInputStream(), destination);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to store file", e);
         }
 

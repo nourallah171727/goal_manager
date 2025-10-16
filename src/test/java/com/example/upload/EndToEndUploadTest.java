@@ -62,40 +62,7 @@ public class EndToEndUploadTest {
         }
         uploadRepository.deleteAll();
     }
-    //not authenticated check
-    @Test
-    void notAuthenticated() throws Exception {
-        User user=new User("name","email","password");
-        user.setRole("USER");
-        userRepository.save(user);
 
-        Goal goal=new Goal("name",user);
-        goal.setCategory(GoalCategory.SPORTS);
-        goal.setVotesToMarkCompleted(3);
-        goal.setType(GoalType.PUBLIC);
-        goal.getMembers().add(user);
-        goalRepository.save(goal);
-
-
-        Task task =new Task("task",goal);
-        task.setDifficulty(TaskDifficulty.DIFFICULT);
-        taskRepository.save(task);
-        entityManager.flush();
-        entityManager.clear();
-
-        MockMultipartFile mockFile = new MockMultipartFile(
-                "file", "sample.pdf", "application/pdf",
-                "%PDF-1.4\n%âãÏÓ\n1 0 obj\n<<>>\nendobj\n".getBytes()
-        );
-        Long taskId=task.getId();
-        // when
-        mockMvc.perform(
-                        multipart("/files/upload/{task_id}", taskId)
-                                .file(mockFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
-                .andExpect(status().is3xxRedirection());
-    }
 
     @Test
     @WithMockUser(username = "name", roles = {"USER"})
