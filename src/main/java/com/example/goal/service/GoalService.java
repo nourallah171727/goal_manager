@@ -89,10 +89,10 @@ public class GoalService {
         }
         goal.setTotalPoints(totalPoints);
         Goal saved=goalRepository.save(goal);
-        userScorePairService.joinGoal(userId,saved.getId());
+        userScorePairService.joinGoal(saved.getId(),userId);
         return saved;
     }
-
+/*
     public Goal updateGoal(Long id, Goal goal) {
         if(id==null){
             throw new IllegalArgumentException("id must not be null");
@@ -121,6 +121,8 @@ public class GoalService {
 
         return goalRepository.save(goal);
     }
+    */
+
 
     public void deleteById(Long id) {
         Goal goal = goalRepository.findById(id)
@@ -138,13 +140,7 @@ public class GoalService {
         goalRepository.deleteById(id);
     }
 
-    private User validateAndGetUser(Long userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("userId must not be null");
-        }
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("userId must be valid"));
-    }
+
 
 
     public void joinGoal(Long goalId, Long userId) {
