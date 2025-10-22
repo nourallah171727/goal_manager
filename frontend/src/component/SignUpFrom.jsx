@@ -8,7 +8,7 @@ export default function SignupForm() {
     e.preventDefault();
   
     try {
-      const response = await fetch("/user", {
+      const response = await fetch("http://localhost:8080/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
