@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { login } from "../services/authService";
+import { Link } from "react-router-dom";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
@@ -10,7 +11,7 @@ export default function LoginForm() {
   
     try {
       console.log("Attempting login...");
-      const res = await login(email, password);
+      const res = await login(username, password);
       console.log("✅ Logged in successfully!");
       alert("Login success!");
     } catch (err) {
@@ -20,12 +21,12 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
+    <form className="auth-card" onSubmit={handleSubmit}>
+      <h2>Welcome back 👋</h2>
       <input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
       <input
         placeholder="Password"
@@ -34,6 +35,9 @@ export default function LoginForm() {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button type="submit">Login</button>
+      <p>
+        Don’t have an account? <Link to="/signup">Sign up</Link>
+      </p>
     </form>
   );
 }

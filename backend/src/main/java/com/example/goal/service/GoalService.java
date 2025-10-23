@@ -142,7 +142,7 @@ public class GoalService {
 
 
 
-
+    //this is to fix , u cannot join goals that are actually private
     public void joinGoal(Long goalId, Long userId) {
         User user=getCurrentUser();
         if(!user.getId().equals(userId)){

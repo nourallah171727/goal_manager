@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function SignupForm() {
   const [username, setUsername] = useState("");
@@ -29,8 +30,8 @@ export default function SignupForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
+    <form className="auth-card" onSubmit={handleSubmit}>
+      <h2>Create Account ✨</h2>
       <input
         placeholder="Username"
         value={username}
@@ -47,7 +48,10 @@ export default function SignupForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button>Register</button>
+      <button type="submit">Sign Up</button>
+      <p>
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
     </form>
   );
 }

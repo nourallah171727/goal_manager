@@ -3,7 +3,7 @@ export async function login(username, password) {
     formData.append("username", username);
     formData.append("password", password);
   
-    const response = await fetch("/login", {
+    const response = await fetch("http://localhost:8080/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

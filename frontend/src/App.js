@@ -1,12 +1,19 @@
 import React from "react";
-import LoginPage from "./pages/LoginPage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupForm from "./component/SignUpFrom";
+import LoginForm from "./component/LoginForm";
+import "./App.css";
 
 function App() {
   return (
-    <div>
-      <SignupForm />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* show login by default */}
+        <Route path="/" element={<LoginForm />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

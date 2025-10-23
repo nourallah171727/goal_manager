@@ -1,0 +1,93 @@
+:root {
+    --primary: #111111;
+    --text: #111111;
+    --background: #ffffff;
+    --border: #e5e5e5;
+    --radius: 12px;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  
+  body {
+    background: var(--background);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* === Card Form Container === */
+  .auth-card {
+    background: white;
+    width: 360px;
+    padding: 32px 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  h2 {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  input {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  
+  input:focus {
+    border-color: var(--primary);
+  }
+  
+  button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s ease;
+  }
+  
+  button:hover {
+    background: #222;
+  }
+  
+  p {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Small fade-in animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
