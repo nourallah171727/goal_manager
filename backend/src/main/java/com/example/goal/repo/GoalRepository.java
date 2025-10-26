@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
-    boolean existsByHost_Id(Long userId);
-    List<Goal> findByHost_Id(Long userId);
     List<Goal> findByHost(User user);
     List<Goal> findByMembersContaining(User user);
     List<Goal> findByType(GoalType type);

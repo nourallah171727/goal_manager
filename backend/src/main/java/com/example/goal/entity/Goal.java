@@ -1,7 +1,6 @@
 package com.example.goal.entity;
 
 import com.example.goal.common.GoalCategory;
-import com.example.goal.common.GoalStand;
 import com.example.goal.common.GoalType;
 import com.example.task.entity.Task;
 import com.example.user.entity.User;
@@ -10,7 +9,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
