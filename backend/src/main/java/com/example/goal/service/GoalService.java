@@ -1,9 +1,7 @@
 package com.example.goal.service;
 
-import com.example.goal.common.GoalStand;
 import com.example.goal.entity.Goal;
 import com.example.goal.common.GoalType;
-import com.example.ranking.repo.UserScorePairRepository;
 import com.example.ranking.service.UserScorePairService;
 import com.example.task.entity.Task;
 import com.example.user.entity.User;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -88,6 +87,8 @@ public class GoalService {
             totalPoints+=task.getDifficulty().getWeight();
         }
         goal.setTotalPoints(totalPoints);
+        goal.setCreatedAt(LocalDateTime.now());
+
         Goal saved=goalRepository.save(goal);
         userScorePairService.joinGoal(saved.getId(),userId);
         return saved;

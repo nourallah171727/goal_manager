@@ -33,4 +33,14 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
 
     @Query("SELECT g FROM Goal g ORDER BY SIZE(g.members) DESC")
     Page<Goal> findPopularGoals(Pageable pageable);
+
+
+    @Query("""
+    SELECT g
+    FROM Goal g
+    LEFT JOIN g.members m
+    GROUP BY g.id
+    ORDER BY COUNT(m) DESC
+""")
+    Page<Goal> findMostPopularGoals(Pageable pageable);
 }

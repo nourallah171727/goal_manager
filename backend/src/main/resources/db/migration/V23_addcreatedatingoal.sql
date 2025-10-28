@@ -1,0 +1,2 @@
+ALTER TABLE goals
+ADD COLUMN created_at TIMESTAMP ;

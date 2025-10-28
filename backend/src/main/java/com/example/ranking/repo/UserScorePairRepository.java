@@ -1,9 +1,7 @@
 package com.example.ranking.repo;
 
-import com.example.goal.entity.Goal;
 import com.example.ranking.model.UserGoalScorePair;
 import com.example.ranking.model.UserGoalScorePairId;
-import com.example.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

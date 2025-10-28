@@ -1,6 +1,7 @@
 package com.example.dto;
 
 import com.example.dto.goal.GoalCreateDTO;
+import com.example.dto.goal.GoalFeedDTO;
 import com.example.dto.goal.GoalResponseDTO;
 import com.example.dto.task.TaskCreateDTO;
 import com.example.dto.task.TaskResponseDTO;
@@ -53,5 +54,15 @@ public class DTOMapper {
     }
     public GoalResponseDTO goalToResponseDTO(Goal goal){
         return new GoalResponseDTO(goal.getId(),goal.getName(),goal.getCategory());
+    }
+    public GoalFeedDTO goalToGoalFeedDTO(Goal goal){
+        //TODO: to implement
+        return new GoalFeedDTO(goal.getHost().getUsername(),
+                goal.getDueDate(),
+                goal.getCategory(),
+                goal.getCreatedAt(),
+                goal.getVotesToMarkCompleted(),
+                goal.getTasks().stream().map(e->taskToResponseDTO(e)).collect(Collectors.toList())
+                );
     }
 }
