@@ -57,7 +57,7 @@ public class DTOMapper {
     }
     public GoalFeedDTO goalToGoalFeedDTO(Goal goal){
         //TODO: to implement
-        return new GoalFeedDTO(goal.getHost().getUsername(),
+        return new GoalFeedDTO(goal.getName(),goal.getHost().getUsername(),
                 goal.getDueDate(),
                 goal.getCategory(),
                 goal.getCreatedAt(),

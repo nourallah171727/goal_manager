@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record GoalFeedDTO (String nameOfHost,
+public record GoalFeedDTO (String name,
+        String nameOfHost,
                            LocalDate dueDate,
                            GoalCategory category,
                            LocalDateTime createdAt,
